@@ -56,7 +56,7 @@ public class AppShellController {
         configureNavigation();
 
         if ("ADMIN".equalsIgnoreCase(user.getRole())) {
-            showScreen(ADMIN_STUDENTS);
+            showScreen(DASHBOARD);
         } else if (user instanceof GiangVien || "SINHVIEN".equalsIgnoreCase(user.getRole())) {
             showScreen(DASHBOARD);
         } else {
@@ -106,6 +106,7 @@ public class AppShellController {
             addNavigationButton("Tổng quan", DASHBOARD);
             addNavigationButton("Lớp phụ trách và bảng điểm", GRADEBOOK);
         } else if ("ADMIN".equalsIgnoreCase(user.getRole())) {
+            addNavigationButton("Tổng quan", DASHBOARD);
             addNavigationButton("Quản lý sinh viên", ADMIN_STUDENTS);
             addNavigationButton("Quản lý giảng viên", ADMIN_LECTURERS);
             addNavigationButton("Quản lý môn học", ADMIN_COURSES);

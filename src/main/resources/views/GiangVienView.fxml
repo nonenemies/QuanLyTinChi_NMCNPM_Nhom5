@@ -19,7 +19,7 @@
         <VBox spacing="16.0">
             <padding><Insets bottom="24.0" left="28.0" right="28.0" top="4.0" /></padding>
             <HBox alignment="CENTER_LEFT" spacing="12.0">
-                <Label styleClass="section-title" text="Lớp học phần và bảng điểm" />
+                <Label styleClass="section-title" text="Lớp phụ trách và bảng điểm" />
                 <Region HBox.hgrow="ALWAYS" />
                 <Button onAction="#onRefresh" styleClass="text-button" text="Làm mới" />
             </HBox>

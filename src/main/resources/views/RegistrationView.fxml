@@ -34,7 +34,7 @@
                            promptText="Tìm theo mã, tên học phần, lớp hoặc giảng viên..."
                            styleClass="form-field registration-search" />
                 <Button fx:id="btnConfirm" disable="true" onAction="#onConfirmRegistration"
-                        styleClass="login-button registration-confirm" text="Đăng ký môn đã chọn" />
+                        styleClass="login-button registration-confirm" text="Xác nhận đăng ký" />
             </HBox>
 
             <VBox spacing="6.0" styleClass="registration-card">
@@ -80,7 +80,7 @@
                 </TableView>
                 <HBox alignment="CENTER_RIGHT" spacing="8.0">
                     <Button fx:id="btnCancelRegistration" disable="true" onAction="#onCancelRegistration"
-                            styleClass="registration-cancel-button" text="Hủy lớp đã chọn" />
+                            styleClass="registration-cancel-button" text="Hủy lớp đã đăng ký" />
                 </HBox>
             </VBox>
             <Label fx:id="lblStatus" managed="false" visible="false"

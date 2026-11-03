@@ -217,7 +217,7 @@ public class DashBoardController {
         addMetric("SINH VIÊN HOẠT ĐỘNG", Long.toString(activeStudents), "SV", "stat-icon-blue");
         addMetric("GIẢNG VIÊN HOẠT ĐỘNG", Long.toString(activeLecturers), "GV", "stat-icon-violet");
         addMetric("MÔN / LỚP ĐANG HOẠT ĐỘNG",
-                activeCourses + " / " + classes.size(), "HP", "stat-icon-green");
+                activeCourses + " môn / " + classes.size() + " lớp", "HP", "stat-icon-green");
 
         addProfileDetail("Email", valueOrDash(admin.getEmail()));
         addProfileDetail("Tài khoản", valueOrDash(admin.getMaSo()));

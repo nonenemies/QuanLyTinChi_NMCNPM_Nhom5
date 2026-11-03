@@ -1,0 +1,16 @@
+package Model;
+
+public enum KetQuaDangKy {
+    THANH_CONG,
+    SINH_VIEN_KHONG_HOAT_DONG,
+    DOT_DANG_KY_DA_DONG,
+    LOP_KHONG_HOAT_DONG,
+    LOP_CHUA_XEP_LICH,
+    DA_DANG_KY_MON_TRONG_HOC_KY,
+    DA_QUA_MON,
+    THIEU_MON_TIEN_QUYET,
+    TRUNG_LICH,
+    VUOT_QUA_TIN_CHI,
+    DA_CO_DIEM,
+    KHONG_HOP_LE
+}

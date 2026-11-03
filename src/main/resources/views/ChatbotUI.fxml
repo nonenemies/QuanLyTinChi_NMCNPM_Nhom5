@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane minHeight="500.0" minWidth="700.0" styleClass="chatbot-page"
+            stylesheets="@../css/app.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.ChatbotController">
+    <center>
+        <VBox spacing="14.0" styleClass="chatbot-content">
+            <padding>
+                <Insets bottom="22.0" left="28.0" right="28.0" top="22.0" />
+            </padding>
+            <children>
+                <VBox spacing="4.0">
+                    <Label styleClass="registration-eyebrow" text="HỖ TRỢ HỌC TẬP" />
+                    <Label styleClass="registration-title" text="Trợ lý AI tư vấn học tập" />
+                    <Label styleClass="registration-subtitle"
+                           text="Hỏi về kết quả học tập hoặc nhờ gợi ý kế hoạch. Câu trả lời chỉ mang tính tham khảo."
+                           wrapText="true" />
+                </VBox>
+                <ScrollPane fx:id="chatScrollPane" fitToWidth="true" styleClass="chat-scroll-pane"
+                            vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+                    <content>
+                        <VBox fx:id="chatMessages" spacing="12.0" styleClass="chat-messages">
+                            <padding>
+                                <Insets bottom="18.0" left="16.0" right="16.0" top="18.0" />
+                            </padding>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+                <Label fx:id="lblChatStatus" styleClass="chat-status-info" text="" wrapText="true" />
+                <HBox alignment="CENTER" spacing="10.0" styleClass="chat-composer">
+                    <TextField fx:id="txtQuestion" onAction="#onQuestionSubmitted"
+                               promptText="Nhập câu hỏi của bạn..." styleClass="chat-input"
+                               HBox.hgrow="ALWAYS" />
+                    <Button fx:id="btnSend" onAction="#onSend" styleClass="chat-send-button"
+                            text="Gửi" />
+                </HBox>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

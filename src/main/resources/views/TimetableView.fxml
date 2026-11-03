@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane minHeight="650.0" minWidth="1000.0" prefHeight="760.0" prefWidth="1200.0"
+            styleClass="dashboard-page" stylesheets="@../css/app.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.TimetableController">
+    <center>
+        <VBox spacing="16.0" styleClass="timetable-content">
+            <padding><Insets bottom="24.0" left="28.0" right="28.0" top="22.0" /></padding>
+            <children>
+                <VBox spacing="5.0">
+                    <Label styleClass="registration-eyebrow" text="KẾ HOẠCH HỌC TẬP" />
+                    <Label styleClass="registration-title" text="Thời khóa biểu tuần" />
+                    <Label styleClass="registration-subtitle"
+                           text="Lịch lặp theo tuần của các lớp bạn đang học. Cuộn xuống để xem các ca tiếp theo."
+                           wrapText="true" />
+                </VBox>
+                <HBox alignment="CENTER_RIGHT">
+                    <Button onAction="#onRefresh" styleClass="registration-refresh-button"
+                            text="↻  Tải lại thời khóa biểu" />
+                </HBox>
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="timetable-scroll"
+                            vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+                    <content>
+                        <GridPane fx:id="gridSchedule" styleClass="timetable-grid timetable-large-grid" />
+                    </content>
+                </ScrollPane>
+                <Label fx:id="lblStatus" managed="false" visible="false"
+                       styleClass="timetable-status-info" text="Thông tin thời khóa biểu"
+                       wrapText="true" />
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

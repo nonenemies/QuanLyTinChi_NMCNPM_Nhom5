@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane minHeight="600.0" minWidth="900.0" prefHeight="680.0" prefWidth="1080.0"
+            styleClass="login-page" stylesheets="@../css/app.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.LoginController">
+    <left>
+        <StackPane prefWidth="440.0" styleClass="login-hero">
+            <children>
+                <VBox alignment="TOP_LEFT" spacing="0.0" styleClass="hero-content">
+                    <HBox alignment="CENTER_LEFT" spacing="12.0">
+                        <StackPane prefHeight="42.0" prefWidth="42.0" styleClass="brand-mark">
+                            <Label styleClass="brand-mark-text" text="C" />
+                        </StackPane>
+                        <VBox spacing="2.0">
+                            <Label styleClass="brand-name" text="CREDIT HUB" />
+                            <Label styleClass="brand-caption" text="CỔNG QUẢN LÝ TÍN CHỈ" />
+                        </VBox>
+                    </HBox>
+
+                    <VBox spacing="14.0" styleClass="hero-copy">
+                        <Label styleClass="hero-eyebrow" text="HỌC TẬP CHỦ ĐỘNG · TƯƠNG LAI VỮNG VÀNG" />
+                        <Label styleClass="hero-title" text="Lộ trình học tập&#10;trong tầm tay." wrapText="true" />
+                        <Label styleClass="hero-description"
+                               text="Theo dõi tín chỉ, đăng ký học phần và quản lý kế hoạch học tập của bạn ở một nơi."
+                               wrapText="true" />
+                    </VBox>
+
+                    <VBox spacing="14.0" styleClass="hero-summary">
+                        <HBox alignment="CENTER_LEFT" spacing="12.0">
+                            <StackPane prefHeight="38.0" prefWidth="38.0" styleClass="summary-icon">
+                                <Label styleClass="summary-icon-text" text="01" />
+                            </StackPane>
+                            <VBox spacing="3.0">
+                                <Label styleClass="summary-title" text="Kế hoạch rõ ràng" />
+                                <Label styleClass="summary-description" text="Mọi học phần, luôn trong tầm mắt" />
+                            </VBox>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="12.0">
+                            <StackPane prefHeight="38.0" prefWidth="38.0" styleClass="summary-icon">
+                                <Label styleClass="summary-icon-text" text="02" />
+                            </StackPane>
+                            <VBox spacing="3.0">
+                                <Label styleClass="summary-title" text="Tiến độ cập nhật" />
+                                <Label styleClass="summary-description" text="Chủ động theo sát hành trình" />
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <Label styleClass="hero-footer" text="© 2025 CREDIT HUB · NHÓM 5" />
+                </VBox>
+            </children>
+        </StackPane>
+    </left>
+    <center>
+        <VBox alignment="CENTER" spacing="0.0" styleClass="login-main">
+            <padding>
+                <Insets bottom="56.0" left="76.0" right="76.0" top="56.0" />
+            </padding>
+            <children>
+                <HBox alignment="CENTER_RIGHT" styleClass="login-topbar">
+                    <Label styleClass="topbar-note" text="Bạn cần hỗ trợ? " />
+                    <Label styleClass="topbar-link" text="Liên hệ quản trị viên" />
+                </HBox>
+
+                <VBox maxWidth="410.0" spacing="0.0" styleClass="login-form">
+                    <Label styleClass="form-eyebrow" text="CỔNG THÔNG TIN SINH VIÊN" />
+                    <Label styleClass="form-title" text="Chào mừng trở lại" />
+                    <Label styleClass="form-description" text="Đăng nhập để tiếp tục hành trình học tập của bạn." wrapText="true" />
+
+                    <Label styleClass="field-label" text="Email" />
+                    <TextField fx:id="txtEmail" maxWidth="Infinity" prefHeight="50.0"
+                               promptText="name@sv.edu.vn" styleClass="form-field" />
+
+                    <HBox alignment="CENTER_LEFT" styleClass="password-label-row">
+                        <Label styleClass="field-label" text="Mật khẩu" />
+                    </HBox>
+                    <PasswordField fx:id="txtPassword" maxWidth="Infinity" onAction="#onBtnLoginClick"
+                                   prefHeight="50.0" promptText="Nhập mật khẩu của bạn" styleClass="form-field" />
+
+                    <Label fx:id="lblError" managed="false" styleClass="form-error"
+                           text="Email hoặc mật khẩu không chính xác" visible="false" wrapText="true" />
+
+                    <Button fx:id="btnLogin" maxWidth="Infinity" onAction="#onBtnLoginClick"
+                            prefHeight="52.0" styleClass="login-button" text="Đăng nhập">
+                        <VBox.margin>
+                            <Insets top="26.0" />
+                        </VBox.margin>
+                    </Button>
+
+                    <HBox alignment="CENTER" spacing="5.0" styleClass="login-note">
+                        <Label styleClass="muted-text" text="Lần đầu sử dụng?" />
+                        <Label styleClass="topbar-link" text="Liên hệ nhà trường" />
+                    </HBox>
+                </VBox>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane minHeight="650.0" minWidth="1000.0" prefHeight="760.0" prefWidth="1200.0"
+            styleClass="dashboard-page" stylesheets="@../css/app.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.AppShellController">
+    <left>
+        <VBox prefWidth="248.0" spacing="14.0" styleClass="sidebar">
+            <padding><Insets bottom="24.0" left="20.0" right="20.0" top="28.0" /></padding>
+            <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="sidebar-brand">
+                <VBox spacing="2.0">
+                    <Label styleClass="brand-name" text="CREDIT HUB" />
+                    <Label fx:id="lblUserRole" styleClass="brand-caption" text="CỔNG HỌC VỤ" />
+                </VBox>
+            </HBox>
+            <Label styleClass="nav-section-title" text="KHÔNG GIAN CỦA BẠN">
+                <VBox.margin><Insets top="24.0" /></VBox.margin>
+            </Label>
+            <VBox fx:id="navigationItems" spacing="6.0" />
+            <Region VBox.vgrow="ALWAYS" />
+            <VBox spacing="5.0" styleClass="sidebar-help">
+                <Label fx:id="lblUserName" styleClass="help-title" text="Người dùng" wrapText="true" />
+                <Label styleClass="help-description" text="Đang đăng nhập" />
+            </VBox>
+            <Button maxWidth="Infinity" onAction="#onLogout"
+                    styleClass="nav-item logout-item" text="Đăng xuất" />
+        </VBox>
+    </left>
+    <center>
+        <VBox spacing="0.0">
+            <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="app-topbar">
+                <padding><Insets bottom="18.0" left="30.0" right="30.0" top="18.0" /></padding>
+                <Label fx:id="lblContentTitle" styleClass="topbar-title" text="Tổng quan" />
+                <Region HBox.hgrow="ALWAYS" />
+            </HBox>
+            <VBox fx:id="contentHost" VBox.vgrow="ALWAYS" />
+        </VBox>
+    </center>
+</BorderPane>

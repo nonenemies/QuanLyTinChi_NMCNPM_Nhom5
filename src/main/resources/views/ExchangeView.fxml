@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane minHeight="650.0" minWidth="1000.0" prefHeight="760.0" prefWidth="1200.0"
+            styleClass="dashboard-page" stylesheets="@../css/app.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.ExchangeController">
+    <center>
+        <VBox spacing="16.0" styleClass="exchange-content">
+            <padding><Insets bottom="28.0" left="34.0" right="34.0" top="22.0" /></padding>
+            <children>
+                <VBox spacing="5.0">
+                    <Label styleClass="registration-eyebrow" text="KẾT NỐI SINH VIÊN" />
+                    <Label styleClass="registration-title" text="Sàn giao dịch đổi lớp" />
+                    <Label styleClass="registration-subtitle" wrapText="true"
+                           text="Đăng tin lớp bạn đang học và lớp bạn muốn vào. Người chốt phải đang học lớp bạn muốn; hai lớp có thể thuộc các môn khác nhau. Giao dịch thành công sẽ hoán đổi hai lớp." />
+                </VBox>
+
+                <VBox spacing="10.0" styleClass="registration-card">
+                    <Label styleClass="section-title" text="Tạo bài đăng trao đổi" />
+                    <Label styleClass="section-subtitle" wrapText="true"
+                           text="Bạn đề nghị rời lớp đang học để vào lớp mong muốn. Hãy chọn đúng hai lớp; hệ thống sẽ kiểm tra đăng ký và môn tiên quyết." />
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <VBox HBox.hgrow="ALWAYS" spacing="5.0">
+                            <Label styleClass="field-label" text="LỚP BẠN ĐANG HỌC (SẼ RỜI)" />
+                            <ComboBox fx:id="cmbCurrentClass" maxWidth="Infinity" promptText="Chọn lớp hiện đang học"
+                                      styleClass="exchange-combo" />
+                        </VBox>
+                        <Label styleClass="exchange-arrow" text="→" />
+                        <VBox HBox.hgrow="ALWAYS" spacing="5.0">
+                            <Label styleClass="field-label" text="LỚP BẠN MUỐN VÀO" />
+                            <ComboBox fx:id="cmbWantedClass" maxWidth="Infinity" promptText="Chọn lớp mong muốn"
+                                      styleClass="exchange-combo" />
+                        </VBox>
+                    </HBox>
+                    <TextArea fx:id="txtReason" prefRowCount="2" promptText="Lý do hoặc thông tin thêm (không bắt buộc, tối đa 200 ký tự)"
+                              styleClass="form-field exchange-reason" wrapText="true" />
+                    <HBox alignment="CENTER_LEFT" spacing="12.0">
+                        <Button onAction="#onPostRequest" styleClass="login-button exchange-action" text="Đăng lên sàn" />
+                        <Button onAction="#onRefresh" styleClass="registration-refresh-button" text="↻  Tải lại dữ liệu" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="lblStatus" managed="false" visible="false" styleClass="exchange-message"
+                               text="Thông báo" wrapText="true" />
+                    </HBox>
+                </VBox>
+
+                <TabPane tabClosingPolicy="UNAVAILABLE" styleClass="exchange-tabs" VBox.vgrow="ALWAYS">
+                    <tabs>
+                        <Tab text="Bài đăng đang chờ">
+                            <content>
+                                <VBox spacing="10.0" styleClass="registration-card">
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                        <VBox spacing="3.0">
+                                            <Label styleClass="section-title" text="Tìm người trao đổi" />
+                                            <Label styleClass="section-subtitle" text="Chỉ hiện bài của sinh viên khác; chọn một bài để chốt giao dịch." />
+                                        </VBox>
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <TextField fx:id="txtSearch" prefWidth="300.0"
+                                                   promptText="Tìm tên, mã SV, lớp, môn..."
+                                                   styleClass="form-field registration-search" />
+                                        <Button onAction="#onAcceptRequest" styleClass="login-button exchange-action"
+                                                text="Chốt bài đã chọn" />
+                                    </HBox>
+                                    <TableView fx:id="tblMarketplace" prefHeight="240.0" styleClass="registration-table">
+                                        <columns>
+                                            <TableColumn fx:id="colMarketId" prefWidth="58.0" text="MÃ" />
+                                            <TableColumn fx:id="colMarketStudent" prefWidth="132.0" text="SINH VIÊN" />
+                                            <TableColumn fx:id="colMarketFrom" prefWidth="205.0" text="ĐANG HỌC / RỜI" />
+                                            <TableColumn fx:id="colMarketTo" prefWidth="205.0" text="MUỐN VÀO" />
+                                            <TableColumn fx:id="colMarketReason" prefWidth="230.0" text="LÝ DO" />
+                                            <TableColumn fx:id="colMarketDate" prefWidth="125.0" text="NGÀY ĐĂNG" />
+                                        </columns>
+                                    </TableView>
+                                    <Label fx:id="lblMarketEmpty" managed="false" visible="false" styleClass="registration-empty"
+                                           text="Chưa có bài đăng phù hợp." />
+                                </VBox>
+                            </content>
+                        </Tab>
+                        <Tab text="Bài đăng của tôi &amp; lịch sử">
+                            <content>
+                                <VBox spacing="10.0" styleClass="registration-card">
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                        <VBox spacing="3.0">
+                                            <Label styleClass="section-title" text="Bài đăng và trạng thái xử lý" />
+                                            <Label styleClass="section-subtitle" text="Bạn chỉ có thể hủy bài của mình khi bài vẫn đang chờ xác nhận." />
+                                        </VBox>
+                                        <Region HBox.hgrow="ALWAYS" />
+                                        <Button onAction="#onCancelRequest" styleClass="registration-refresh-button"
+                                                text="Hủy bài đã chọn" />
+                                    </HBox>
+                                    <TableView fx:id="tblMyRequests" prefHeight="310.0" styleClass="registration-table">
+                                        <columns>
+                                            <TableColumn fx:id="colMyId" prefWidth="58.0" text="MÃ" />
+                                            <TableColumn fx:id="colMyFrom" prefWidth="205.0" text="ĐANG HỌC / RỜI" />
+                                            <TableColumn fx:id="colMyTo" prefWidth="205.0" text="MUỐN VÀO" />
+                                            <TableColumn fx:id="colMyStatus" prefWidth="120.0" text="TRẠNG THÁI" />
+                                            <TableColumn fx:id="colMyReason" prefWidth="250.0" text="LÝ DO" />
+                                            <TableColumn fx:id="colMyDate" prefWidth="125.0" text="NGÀY ĐĂNG" />
+                                        </columns>
+                                    </TableView>
+                                    <Label fx:id="lblMyEmpty" managed="false" visible="false" styleClass="registration-empty"
+                                           text="Bạn chưa có bài đăng nào." />
+                                </VBox>
+                            </content>
+                        </Tab>
+                    </tabs>
+                </TabPane>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

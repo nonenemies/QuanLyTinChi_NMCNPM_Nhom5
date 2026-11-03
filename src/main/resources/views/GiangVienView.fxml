@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane minHeight="650.0" minWidth="1000.0" prefHeight="760.0" prefWidth="1200.0"
+            styleClass="dashboard-page" stylesheets="@../css/app.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Controllers.GiangVienController">
+    <center>
+        <VBox spacing="16.0">
+            <padding><Insets bottom="24.0" left="28.0" right="28.0" top="4.0" /></padding>
+            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                <Label styleClass="section-title" text="Lớp học phần và bảng điểm" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button onAction="#onRefresh" styleClass="text-button" text="Làm mới" />
+            </HBox>
+            <Label fx:id="lblStatus" styleClass="teacher-status-info" text="Chọn một lớp để xem danh sách sinh viên." />
+            <HBox spacing="16.0" VBox.vgrow="ALWAYS">
+                <VBox minWidth="280.0" prefWidth="330.0" spacing="10.0" styleClass="teacher-panel">
+                    <padding><Insets bottom="16.0" left="16.0" right="16.0" top="16.0" /></padding>
+                    <Label styleClass="section-title" text="Lớp học phần phụ trách" />
+                    <TableView fx:id="tblClasses" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="colClassCode" prefWidth="90.0" text="Mã lớp" />
+                            <TableColumn fx:id="colCourseCode" prefWidth="82.0" text="Môn" />
+                            <TableColumn fx:id="colSemester" prefWidth="82.0" text="Học kỳ" />
+                            <TableColumn fx:id="colEnrollment" prefWidth="72.0" text="Sĩ số" />
+                        </columns>
+                    </TableView>
+                </VBox>
+                <VBox HBox.hgrow="ALWAYS" minWidth="500.0" spacing="10.0" styleClass="teacher-panel">
+                    <padding><Insets bottom="16.0" left="16.0" right="16.0" top="16.0" /></padding>
+                    <Label styleClass="section-title" text="Danh sách sinh viên và bảng điểm" />
+                    <TableView fx:id="tblStudents" VBox.vgrow="ALWAYS">
+                        <placeholder><Label text="Chọn lớp học phần để xem danh sách sinh viên." /></placeholder>
+                        <columns>
+                            <TableColumn fx:id="colStudentCode" prefWidth="120.0" text="Mã sinh viên" />
+                            <TableColumn fx:id="colStudentName" prefWidth="190.0" text="Họ và tên" />
+                            <TableColumn fx:id="colFinalGrade" prefWidth="110.0" text="Tổng kết" />
+                        </columns>
+                    </TableView>
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <Label styleClass="field-label" text="Thành phần" />
+                        <ComboBox fx:id="cboComponent" prefWidth="220.0" promptText="Chọn thành phần" />
+                        <Label styleClass="field-label" text="Điểm" />
+                        <TextField fx:id="txtScore" maxWidth="90.0" promptText="0 - 10" />
+                        <Button onAction="#onSaveGrade" styleClass="login-button" text="Lưu / cập nhật điểm" />
+                    </HBox>
+                    <Label styleClass="muted-text"
+                           text="Chọn sinh viên trong bảng, thành phần đánh giá và nhập điểm từ 0 đến 10." />
+                </VBox>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

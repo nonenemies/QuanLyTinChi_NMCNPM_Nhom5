@@ -139,11 +139,11 @@ Sinh viên xem điểm tổng kết tại `StudentGradesView.fxml`, được nh�
 
 Sinh viên có thể mở **Trợ lý AI học tập** từ sidebar để hỏi về kết quả học tập và kế hoạch học. Yêu cầu mạng chạy nền để không khóa giao diện; cần cấu hình `GEMINI_API_KEY` trước khi sử dụng.
 
-Sau khi đăng nhập, `AppShell.fxml` giữ sidebar và khung ứng dụng cố định; các Controller nạp nội dung chức năng vào vùng trung tâm mà không thay toàn bộ Scene. Menu được cấu hình theo role: sinh viên có tổng quan, thời khóa biểu, điểm tổng kết, đăng ký và đổi lớp; giảng viên có lớp phụ trách/bảng điểm; admin có các mục quản lý sinh viên, giảng viên, môn học, lớp học phần và thành phần đánh giá.
+Sau khi đăng nhập, `AppShell.fxml` giữ sidebar và khung ứng dụng cố định; các Controller nạp nội dung chức năng vào vùng trung tâm mà không thay toàn bộ Scene. Menu được cấu hình theo role: sinh viên có tổng quan, thời khóa biểu, điểm tổng kết, đăng ký và đổi lớp; giảng viên có lớp phụ trách/bảng điểm; admin chỉ có quản lý sinh viên, quản lý giảng viên và quản lý môn học.
 
 ### Quản trị viên
 
-`AdminView.fxml` dùng lại các model và DAO hiện có để tìm kiếm, thêm, cập nhật và ngừng hoạt động tài khoản sinh viên/giảng viên; quản lý môn học và quan hệ môn tiên quyết; quản lý lớp học phần, sĩ số tối đa và giảng viên phụ trách; cấu hình trọng số thành phần đánh giá qua `ThanhPhanDanhGiaService`. Tài khoản, môn học và lớp được ngừng hoạt động thay vì xóa vật lý để giữ dữ liệu học vụ và lịch sử liên quan. Việc tạo/cập nhật tài khoản cùng hồ sơ vai trò được thực hiện trong một transaction.
+`AdminView.fxml` cung cấp ba mục quản lý: sinh viên, giảng viên và môn học. Admin có thể tìm kiếm, thêm, cập nhật và ngừng hoạt động tài khoản sinh viên/giảng viên; tìm kiếm, thêm, cập nhật và ngừng hoạt động môn học. Tài khoản được ngừng hoạt động thay vì xóa vật lý để giữ dữ liệu học vụ và lịch sử liên quan. Việc tạo/cập nhật tài khoản cùng hồ sơ vai trò được thực hiện trong một transaction. Quản lý lớp học phần, lịch học, mốc điểm, đợt đăng ký/chương trình đào tạo và thành phần đánh giá không nằm trong menu admin.
 
 ### Thành phần đánh giá
 

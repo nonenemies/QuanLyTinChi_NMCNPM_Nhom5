@@ -73,7 +73,7 @@
                 </HBox>
 
                 <VBox maxWidth="410.0" spacing="0.0" styleClass="login-form">
-                    <Label styleClass="form-eyebrow" text="CỔNG THÔNG TIN SINH VIÊN" />
+                    <Label styleClass="form-eyebrow" text="CỔNG QUẢN LÝ TÍN CHỈ" />
                     <Label styleClass="form-title" text="Chào mừng trở lại" />
                     <Label styleClass="form-description" text="Đăng nhập để tiếp tục hành trình học tập của bạn." wrapText="true" />
 

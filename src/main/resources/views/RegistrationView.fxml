@@ -40,7 +40,7 @@
             <VBox spacing="6.0" styleClass="registration-card">
                 <HBox alignment="CENTER_LEFT">
                     <VBox spacing="2.0">
-                        <Label styleClass="section-title" text="Các môn học đang mở" />
+                        <Label styleClass="section-title" text="Lớp học đang mở" />
                         <Label styleClass="section-subtitle"
                                text="Dòng nền xanh là lớp bạn đã đăng ký. Lịch học và giảng viên hiển thị cùng nhau." />
                     </VBox>

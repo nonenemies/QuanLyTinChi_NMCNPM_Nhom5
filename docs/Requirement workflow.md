@@ -148,27 +148,27 @@ Mục đích của hệ thống là hỗ trợ quản lý thông tin tập trung
 
 - Khi nhà trường tiếp nhận sinh viên mới, phòng đào tạo hoặc bộ phận tuyển sinh tổng hợp danh sách sinh viên đã hoàn tất thủ tục nhập học và chuyển thông tin cho bộ phận quản lý hệ thống.  
 - Admin tiếp nhận danh sách và hồ sơ sinh viên, đối chiếu các thông tin gồm mã sinh viên, họ tên, Email, ngày sinh, giới tính, lớp, khóa học và hệ đào tạo để bảo đảm thông tin chính xác trước khi cập nhật lên hệ thống.  
-- Admin đăng nhập thành công vào hệ thống → Hệ thống hiển thị giao diện chính của Admin với các chức năng (Quản lý tài khoản, sinh viên, giảng viên, môn học, lớp học phần và thành phần đánh giá).  
+- Admin đăng nhập thành công vào hệ thống → Hệ thống hiển thị các chức năng Quản lý sinh viên, Quản lý giảng viên và Quản lý môn học.
 - Admin chọn chức năng "Quản lý sinh viên" → Hệ thống hiển thị giao diện quản lý sinh viên gồm danh sách sinh viên (mã sinh viên, họ tên, Email, lớp, khóa học, hệ đào tạo), ô tìm kiếm và các nút "Tìm kiếm", "Thêm sinh viên", "Sửa", "Xóa".  
 - Admin nhấn nút "Thêm sinh viên" → Hệ thống hiển thị giao diện thêm sinh viên với các ô nhập thông tin (mã sinh viên, họ tên, Email, ngày sinh, giới tính, lớp, khóa học, hệ đào tạo) và hai nút "Lưu", "Hủy".  
 - Admin căn cứ vào hồ sơ đã tiếp nhận để nhập thông tin sinh viên mới vào các ô tương ứng và nhấn nút "Lưu" → Hệ thống kiểm tra tính hợp lệ của thông tin và lưu thông tin sinh viên vào cơ sở dữ liệu.  
 - Sau khi lưu thành công → Hệ thống hiển thị thông báo "Thêm sinh viên thành công\!" → Admin nhấn "OK" → Hệ thống quay về giao diện quản lý sinh viên với danh sách đã được cập nhật.  
 - Admin nhập mã sinh viên vừa thêm vào ô tìm kiếm và nhấn nút "Tìm kiếm" → Hệ thống hiển thị thông tin sinh viên tương ứng → Admin đối chiếu lại thông tin đã lưu với hồ sơ ban đầu.  
 - Sau khi hoàn tất, Admin thông báo cho phòng đào tạo hoặc bộ phận phụ trách sinh viên rằng hồ sơ sinh viên mới đã được cập nhật trên hệ thống, phục vụ công tác quản lý và đăng ký học phần.  
-- Admin có thể tiếp tục thêm sinh viên khác hoặc quay về giao diện chính của Admin.
+- Admin có thể tiếp tục thêm sinh viên khác hoặc chuyển sang mục quản lý giảng viên, môn học.
 
 **5\. Admin thêm thông tin giảng viên.**
 
 - Khi nhà trường tiếp nhận giảng viên mới, khoa bộ môn cung cấp thông tin giảng viên cho bộ phận quản lý, gồm mã giảng viên, họ tên, Email, học vị và chuyên môn, kèm hồ sơ hoặc quyết định tiếp nhận giảng viên.  
 - Admin tiếp nhận hồ sơ và đối chiếu các thông tin do khoa hoặc bộ môn cung cấp để bảo đảm thông tin giảng viên được ghi nhận chính xác trước khi đưa vào hệ thống.  
-- Admin đăng nhập vào hệ thống → Hệ thống hiển thị giao diện chính của Admin gồm các chức năng: Quản lý tài khoản, Quản lý sinh viên, Quản lý giảng viên, Quản lý môn học, Quản lý lớp học phần và Quản lý thành phần đánh giá.  
+- Admin đăng nhập vào hệ thống → Hệ thống hiển thị các chức năng Quản lý sinh viên, Quản lý giảng viên và Quản lý môn học.
 - Admin chọn chức năng "Quản lý giảng viên" → Hệ thống hiển thị danh sách giảng viên gồm mã giảng viên, họ tên, Email, học vị, chuyên môn, cùng ô tìm kiếm và các nút "Tìm kiếm", "Thêm giảng viên", "Sửa", "Xóa", "Quay lại".  
 - Admin nhấn nút "Thêm giảng viên" → Hệ thống hiển thị giao diện nhập thông tin giảng viên mới gồm mã giảng viên, họ tên, Email, học vị, chuyên môn và hai nút "Lưu", "Hủy".  
 - Admin căn cứ vào hồ sơ đã tiếp nhận để nhập đầy đủ thông tin giảng viên vào các ô tương ứng → Nhấn nút "Lưu" → Hệ thống kiểm tra tính hợp lệ của dữ liệu và lưu thông tin giảng viên mới vào cơ sở dữ liệu.  
 - Sau khi lưu thành công → Hệ thống hiển thị thông báo "Thêm giảng viên thành công\!" cùng nút "OK" → Admin nhấn "OK" → Hệ thống quay về giao diện "Quản lý giảng viên" và cập nhật danh sách giảng viên.  
 - Admin nhập mã giảng viên vừa thêm vào ô tìm kiếm và nhấn nút "Tìm kiếm" → Hệ thống hiển thị thông tin giảng viên tương ứng → Admin đối chiếu lại với hồ sơ ban đầu để bảo đảm thông tin đã được lưu chính xác.  
 - Sau khi hoàn tất, Admin thông báo cho khoa bộ môn rằng thông tin giảng viên mới đã được cập nhật trên hệ thống để phục vụ công tác quản lý và phân công giảng dạy.  
-- Admin có thể tiếp tục thêm giảng viên khác hoặc nhấn nút "Quay lại" → Hệ thống trở về giao diện chính của Admin.
+- Admin có thể tiếp tục thêm giảng viên khác hoặc chuyển sang mục quản lý sinh viên, môn học.
 
 ### **6\. Chức năng giảng viên nhập điểm học phần.**
 
@@ -202,14 +202,14 @@ Mục đích của hệ thống là hỗ trợ quản lý thông tin tập trung
 
 - Khi nhà trường xây dựng hoặc cập nhật chương trình đào tạo, phòng đào tạo phối hợp với các khoa, bộ môn tổng hợp danh sách các môn học mới đã được phê duyệt, gồm mã môn học, tên môn học, số tín chỉ, loại môn học và mô tả nội dung môn học.  
 - Phòng đào tạo chuyển danh sách môn học mới cho bộ phận quản lý hệ thống → Admin tiếp nhận và đối chiếu thông tin với chương trình đào tạo đã được phê duyệt để tiến hành cập nhật vào hệ thống.  
-- Admin đăng nhập thành công vào hệ thống → Hệ thống hiển thị giao diện chính của Admin với các chức năng quản lý tài khoản, sinh viên, giảng viên, môn học, lớp học phần và thành phần đánh giá.  
+- Admin đăng nhập thành công vào hệ thống → Hệ thống hiển thị các chức năng Quản lý sinh viên, Quản lý giảng viên và Quản lý môn học.
 - Admin chọn chức năng "Quản lý môn học" → Hệ thống hiển thị giao diện quản lý môn học gồm danh sách các môn học (mã môn học, tên môn học, số tín chỉ, loại môn học, mô tả và trạng thái), ô tìm kiếm và các nút "Tìm kiếm", "Thêm môn học", "Sửa", "Xóa", "Quay lại".  
 - Admin nhấn nút "Thêm môn học" → Hệ thống hiển thị giao diện thêm môn học gồm các ô nhập thông tin (mã môn học, tên môn học, số tín chỉ, loại môn học, mô tả) và hai nút "Lưu", "Hủy".  
 - Admin căn cứ vào danh sách do phòng đào tạo cung cấp để nhập thông tin môn học mới vào các ô tương ứng → Kiểm tra lại nội dung đã nhập và nhấn nút "Lưu" → Hệ thống kiểm tra tính hợp lệ của dữ liệu và lưu thông tin môn học mới vào cơ sở dữ liệu.  
 - Sau khi lưu thành công → Hệ thống hiển thị thông báo "Thêm môn học thành công\!" → Admin nhấn "OK" → Hệ thống quay về giao diện "Quản lý môn học" và cập nhật danh sách, trong đó có môn học vừa được thêm.  
 - Admin nhập mã môn học vừa tạo vào ô tìm kiếm và nhấn nút "Tìm kiếm" → Hệ thống hiển thị thông tin môn học tương ứng để Admin đối chiếu lại với danh sách môn học đã được phê duyệt.  
 - Sau khi kiểm tra hoàn tất, Admin thông báo cho phòng đào tạo rằng môn học mới đã được cập nhật trên hệ thống, làm cơ sở để nhà trường mở lớp học phần và tổ chức đăng ký tín chỉ cho sinh viên.  
-- Admin có thể tiếp tục thêm các môn học khác hoặc nhấn nút "Quay lại" → Hệ thống trở về giao diện chính của Admin.
+- Admin có thể tiếp tục thêm các môn học khác hoặc chuyển sang mục quản lý sinh viên, giảng viên.
 
 ### **1.2.1.4. Đối tượng thông tin cần xử lý**
 
@@ -245,14 +245,14 @@ Mục đích của hệ thống là hỗ trợ quản lý thông tin tập trung
 
 ## Quy tắc nghiệp vụ được áp dụng
 
-- Đăng ký, hủy đăng ký và đổi lớp chỉ được thực hiện trong đợt do Admin cấu hình cho học kỳ.
+- Đăng ký, hủy đăng ký và đổi lớp chỉ được thực hiện trong đợt đăng ký được cấu hình sẵn trong cơ sở dữ liệu.
 - Sinh viên có thể đăng ký tạm các lớp trong đợt; cần chốt học kỳ khi tổng tín chỉ từ 11 đến 26. Mọi thay đổi sau khi chốt sẽ bỏ trạng thái chốt và cần chốt lại.
 - Không đăng ký đồng thời hai lớp cùng môn trong một học kỳ, và không đăng ký lại môn đã đạt. Sinh viên chỉ được học lại môn chưa đạt.
 - Hủy lớp bị từ chối nếu đã phát sinh bất kỳ điểm thành phần nào.
 - Đổi lớp yêu cầu hai sinh viên đang học lớp của nhau, cùng học kỳ, chưa có điểm thành phần; phải thỏa điều kiện tiên quyết, lịch học và giới hạn tín chỉ 11–26 cho cả hai sau khi đổi. Việc đổi bảo toàn lịch sử đăng ký và không chuyển điểm giữa các lớp.
 - Bài đổi lớp đang chờ tự hết hiệu lực khi đợt đăng ký kết thúc. Mỗi sinh viên không thể đăng nhiều bài chờ có lớp nguồn hoặc lớp đích trùng nhau.
-- Điểm chỉ được nhập hoặc sửa từ ngày kết thúc học kỳ đến hạn nhập điểm do Admin cấu hình. GPA tích lũy dùng điểm cao nhất của mỗi môn.
-- Admin quản lý lịch học và mốc thời gian của từng học kỳ; không thể thay đổi môn, giảng viên hoặc học kỳ của lớp đã có đăng ký.
+- Điểm chỉ được nhập hoặc sửa từ ngày kết thúc học kỳ đến hạn nhập điểm được cấu hình sẵn trong cơ sở dữ liệu. GPA tích lũy dùng điểm cao nhất của mỗi môn.
+- Lịch học và mốc thời gian của từng học kỳ được cấu hình sẵn trong cơ sở dữ liệu; không thể thay đổi môn, giảng viên hoặc học kỳ của lớp đã có đăng ký.
 
 ### 
 

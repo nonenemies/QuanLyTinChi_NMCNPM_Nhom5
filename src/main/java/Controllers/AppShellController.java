@@ -35,6 +35,8 @@ public class AppShellController {
     private static final String ADMIN_STUDENTS = "admin-students";
     private static final String ADMIN_LECTURERS = "admin-lecturers";
     private static final String ADMIN_COURSES = "admin-courses";
+    private static final String ADMIN_CLASSES = "admin-classes";
+    private static final String ADMIN_COMPONENTS = "admin-components";
 
     @FXML private Label lblUserName;
     @FXML private Label lblUserRole;
@@ -55,9 +57,9 @@ public class AppShellController {
         lblUserRole.setText(roleLabel(user));
         configureNavigation();
 
-        if ("ADMIN".equalsIgnoreCase(user.getRole())) {
-            showScreen(DASHBOARD);
-        } else if (user instanceof GiangVien || "SINHVIEN".equalsIgnoreCase(user.getRole())) {
+        if (user instanceof GiangVien
+                || "SINHVIEN".equalsIgnoreCase(user.getRole())
+                || "ADMIN".equalsIgnoreCase(user.getRole())) {
             showScreen(DASHBOARD);
         } else {
             showError("Vai trò tài khoản không được hỗ trợ.");
@@ -110,6 +112,8 @@ public class AppShellController {
             addNavigationButton("Quản lý sinh viên", ADMIN_STUDENTS);
             addNavigationButton("Quản lý giảng viên", ADMIN_LECTURERS);
             addNavigationButton("Quản lý môn học", ADMIN_COURSES);
+            addNavigationButton("Quản lý lớp học phần", ADMIN_CLASSES);
+            addNavigationButton("Thành phần đánh giá", ADMIN_COMPONENTS);
         }
     }
 
@@ -131,7 +135,8 @@ public class AppShellController {
             case REGISTRATION -> "/views/RegistrationView.fxml";
             case EXCHANGE -> "/views/ExchangeView.fxml";
             case GRADEBOOK -> "/views/GiangVienView.fxml";
-            case ADMIN_STUDENTS, ADMIN_LECTURERS, ADMIN_COURSES -> "/views/AdminView.fxml";
+            case ADMIN_STUDENTS, ADMIN_LECTURERS, ADMIN_COURSES,
+                 ADMIN_CLASSES, ADMIN_COMPONENTS -> "/views/AdminView.fxml";
             default -> throw new IllegalArgumentException("Unknown application screen.");
         };
         try {
@@ -202,6 +207,8 @@ public class AppShellController {
             case ADMIN_STUDENTS -> "Quản lý sinh viên";
             case ADMIN_LECTURERS -> "Quản lý giảng viên";
             case ADMIN_COURSES -> "Quản lý môn học";
+            case ADMIN_CLASSES -> "Quản lý lớp học phần";
+            case ADMIN_COMPONENTS -> "Thành phần đánh giá";
             default -> "";
         };
     }
@@ -217,7 +224,9 @@ public class AppShellController {
             case GRADEBOOK -> "Lớp phụ trách và bảng điểm";
             case ADMIN_STUDENTS -> "Quản lý sinh viên & tài khoản";
             case ADMIN_LECTURERS -> "Quản lý giảng viên & tài khoản";
-            case ADMIN_COURSES -> "Quản lý môn học";
+            case ADMIN_COURSES -> "Quản lý môn học và môn tiên quyết";
+            case ADMIN_CLASSES -> "Quản lý lớp học phần";
+            case ADMIN_COMPONENTS -> "Cấu hình thành phần đánh giá";
             default -> "";
         };
     }

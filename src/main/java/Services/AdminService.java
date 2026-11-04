@@ -14,6 +14,7 @@ import Model.GiangVien;
 import Model.LopHoc;
 import Model.LichHoc;
 import Model.MonHoc;
+import Model.MonTienQuyet;
 import Model.SinhVien;
 import Model.TrangThaiHoatDong;
 import Model.Users;
@@ -304,7 +305,7 @@ public class AdminService {
         }
     }
 
-    public List<MonHoc> layMonTienQuyet(Admin admin, String maMon) {
+    public List<MonTienQuyet> layMonTienQuyet(Admin admin, String maMon) {
         kiemTraAdminHienTai(admin);
         try {
             return MonTienQuyetDAO.layDanhSachMonTienQuyet(maMon);

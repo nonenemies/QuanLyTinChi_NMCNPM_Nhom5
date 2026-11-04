@@ -53,7 +53,7 @@ src/
     │   │   ├── DiemThanhPhan.java
     │   │   ├── GiangVien.java
     │   │   ├── LichHoc.java
-    │   │   ├── LopHoc.java
+    │   │   ├── LopHocPhan.java
     │   │   ├── MonHoc.java
     │   │   ├── SinhVien.java
     │   │   ├── ThanhPhanDanhGia.java

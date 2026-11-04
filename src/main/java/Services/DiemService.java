@@ -4,7 +4,7 @@ import DAO.DiemDAO;
 import DAO.LopHocDAO;
 import Model.BangDiemSinhVien;
 import Model.GiangVien;
-import Model.LopHoc;
+import Model.LopHocPhan;
 import Model.LopHocDangKy;
 import Model.SinhVien;
 import Model.TrangThaiHoatDong;
@@ -76,7 +76,7 @@ public class DiemService {
         return Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER).compare(first, second);
     }
 
-    public List<LopHoc> layLopPhuTrach(GiangVien giangVien) {
+    public List<LopHocPhan> layLopPhuTrach(GiangVien giangVien) {
         kiemTraGiangVien(giangVien);
         try {
             return lopHocDAO.layDanhSachLopCuaGiangVien(giangVien.getMaGiangVien());
@@ -151,7 +151,7 @@ public class DiemService {
         if (khoa && !diemDAO.giangVienConHoatDong(conn, giangVien.getMaGiangVien())) {
             throw new ServiceException("Tài khoản giảng viên không còn hoạt động.");
         }
-        LopHoc lopHoc = khoa ? lopHocDAO.layLopTheoMaForUpdate(conn, maLop)
+        LopHocPhan lopHoc = khoa ? lopHocDAO.layLopTheoMaForUpdate(conn, maLop)
                 : lopHocDAO.layLopTheoMa(conn, maLop);
         if (lopHoc == null || !giangVien.getMaGiangVien().equals(lopHoc.getMaGV())) {
             throw new ServiceException("Bạn không được phân công phụ trách lớp này.");

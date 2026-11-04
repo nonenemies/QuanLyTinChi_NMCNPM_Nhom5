@@ -1,6 +1,6 @@
 package DAO;
 
-import Model.LopHoc;
+import Model.LopHocPhan;
 import Model.LopHocDangKy;
 import Model.TrangThaiHoatDong;
 import Util.DBConnection;
@@ -17,7 +17,7 @@ import java.util.Objects;
 public class LopHocDAO {
 
     /** Tạo lớp mới; sĩ số hiện tại bắt đầu bằng 0 theo DEFAULT của database. */
-    public boolean themLopHoc(LopHoc lopHoc) throws SQLException {
+    public boolean themLopHoc(LopHocPhan lopHoc) throws SQLException {
         Objects.requireNonNull(lopHoc, "lopHoc không được null");
         String sql = "INSERT INTO LopHoc (MaLop, MaMon, MaGV, HocKy, SiSoToiDa) "
                 + "VALUES (?, ?, ?, ?, ?)";
@@ -34,7 +34,7 @@ public class LopHocDAO {
     }
 
     /** Sửa thông tin lớp; không ghi đè sĩ số hiện tại do dữ liệu có thể đã thay đổi. */
-    public boolean suaLopHoc(LopHoc lopHoc) throws SQLException {
+    public boolean suaLopHoc(LopHocPhan lopHoc) throws SQLException {
         Objects.requireNonNull(lopHoc, "lopHoc không được null");
         try (Connection conn = DBConnection.getConnection()) {
             conn.setAutoCommit(false);
@@ -118,7 +118,7 @@ public class LopHocDAO {
     }
 
     /** Lấy các lớp được phân công cho một giảng viên, gồm cả lớp đã kết thúc. */
-    public List<LopHoc> layDanhSachLopCuaGiangVien(String maGV) throws SQLException {
+    public List<LopHocPhan> layDanhSachLopCuaGiangVien(String maGV) throws SQLException {
         String sql = "SELECT MaLop, MaMon, MaGV, HocKy, SiSoToiDa, SiSoHienTai, TrangThai "
                 + "FROM LopHoc WHERE MaGV = ? ORDER BY HocKy DESC, MaLop";
         return truyVanDanhSach(sql, maGV);
@@ -195,31 +195,31 @@ public class LopHocDAO {
     }
 
     /** Lấy mọi lớp, gồm cả lớp đã ngừng hoạt động, cho màn hình quản trị. */
-    public List<LopHoc> layTatCaLopHoc() throws SQLException {
+    public List<LopHocPhan> layTatCaLopHoc() throws SQLException {
         return truyVanDanhSach("SELECT MaLop, MaMon, MaGV, HocKy, SiSoToiDa, SiSoHienTai, TrangThai "
                 + "FROM LopHoc ORDER BY MaLop", null);
     }
 
     /** Tìm lớp theo mã, gồm cả lớp đã ngừng hoạt động (tự mở connection). */
-    public LopHoc layLopTheoMa(String maLop) throws SQLException {
+    public LopHocPhan layLopTheoMa(String maLop) throws SQLException {
         try (Connection conn = DBConnection.getConnection()) {
             return layLopTheoMa(conn, maLop);
         }
     }
 
     /** Tìm lớp theo mã trên connection do bên gọi quản lý, để đọc trong cùng transaction. */
-    public LopHoc layLopTheoMa(Connection conn, String maLop) throws SQLException {
+    public LopHocPhan layLopTheoMa(Connection conn, String maLop) throws SQLException {
         String sql = "SELECT MaLop, MaMon, MaGV, HocKy, SiSoToiDa, SiSoHienTai, TrangThai "
                 + "FROM LopHoc WHERE MaLop = ?";
-        List<LopHoc> ketQua = truyVanDanhSach(conn, sql, maLop);
+        List<LopHocPhan> ketQua = truyVanDanhSach(conn, sql, maLop);
         return ketQua.isEmpty() ? null : ketQua.get(0);
     }
 
     /** Khóa lớp khi đăng ký để các lượt đăng ký cùng lớp được xử lý tuần tự. */
-    public LopHoc layLopTheoMaForUpdate(Connection conn, String maLop) throws SQLException {
+    public LopHocPhan layLopTheoMaForUpdate(Connection conn, String maLop) throws SQLException {
         String sql = "SELECT MaLop, MaMon, MaGV, HocKy, SiSoToiDa, SiSoHienTai, TrangThai "
                 + "FROM LopHoc WHERE MaLop = ? FOR UPDATE";
-        List<LopHoc> ketQua = truyVanDanhSach(conn, sql, maLop);
+        List<LopHocPhan> ketQua = truyVanDanhSach(conn, sql, maLop);
         return ketQua.isEmpty() ? null : ketQua.get(0);
     }
 
@@ -258,22 +258,22 @@ public class LopHocDAO {
         }
     }
 
-    private List<LopHoc> truyVanDanhSach(String sql, String thamSoMaMonHoacLop) throws SQLException {
+    private List<LopHocPhan> truyVanDanhSach(String sql, String thamSoMaMonHoacLop) throws SQLException {
         try (Connection conn = DBConnection.getConnection()) {
             return truyVanDanhSach(conn, sql, thamSoMaMonHoacLop);
         }
     }
 
-    private List<LopHoc> truyVanDanhSach(Connection conn, String sql, String thamSoMaMonHoacLop)
+    private List<LopHocPhan> truyVanDanhSach(Connection conn, String sql, String thamSoMaMonHoacLop)
             throws SQLException {
-        List<LopHoc> danhSach = new ArrayList<>();
+        List<LopHocPhan> danhSach = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             if (thamSoMaMonHoacLop != null) {
                 ps.setString(1, thamSoMaMonHoacLop);
             }
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    danhSach.add(new LopHoc(
+                    danhSach.add(new LopHocPhan(
                             rs.getString("MaLop"),
                             rs.getString("MaMon"),
                             rs.getString("MaGV"),

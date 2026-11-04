@@ -11,7 +11,7 @@ import DAO.SinhVienDAO;
 import DAO.UsersDAO;
 import Model.Admin;
 import Model.GiangVien;
-import Model.LopHoc;
+import Model.LopHocPhan;
 import Model.LichHoc;
 import Model.MonHoc;
 import Model.MonTienQuyet;
@@ -334,7 +334,7 @@ public class AdminService {
         }
     }
 
-    public List<LopHoc> layDanhSachLopHoc(Admin admin) {
+    public List<LopHocPhan> layDanhSachLopHoc(Admin admin) {
         kiemTraAdminHienTai(admin);
         try {
             return lopHocDAO.layTatCaLopHoc();
@@ -343,7 +343,7 @@ public class AdminService {
         }
     }
 
-    public boolean themLopHoc(Admin admin, LopHoc lopHoc) {
+    public boolean themLopHoc(Admin admin, LopHocPhan lopHoc) {
         kiemTraAdminHienTai(admin);
         try {
             return lopHocDAO.themLopHoc(lopHoc);
@@ -352,7 +352,7 @@ public class AdminService {
         }
     }
 
-    public boolean suaLopHoc(Admin admin, LopHoc lopHoc) {
+    public boolean suaLopHoc(Admin admin, LopHocPhan lopHoc) {
         kiemTraAdminHienTai(admin);
         try {
             return lopHocDAO.suaLopHoc(lopHoc);

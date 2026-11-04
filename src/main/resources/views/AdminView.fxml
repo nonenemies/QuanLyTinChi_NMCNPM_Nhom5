@@ -26,7 +26,7 @@
         <Button onAction="#onRefresh" text="Tải lại dữ liệu" />
     </HBox>
     <Label fx:id="lblStatus" wrapText="true" />
-    <StackPane fx:id="adminContent" VBox.vgrow="ALWAYS">
+    <StackPane VBox.vgrow="ALWAYS">
         <ScrollPane fx:id="accountManagementPane" fitToWidth="true"
                     hbarPolicy="NEVER" vbarPolicy="ALWAYS">
                 <content>

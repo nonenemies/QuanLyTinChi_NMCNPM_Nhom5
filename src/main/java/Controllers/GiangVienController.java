@@ -2,7 +2,7 @@ package Controllers;
 
 import Model.BangDiemSinhVien;
 import Model.GiangVien;
-import Model.LopHoc;
+import Model.LopHocPhan;
 import Model.ThanhPhanDanhGia;
 import Model.TrangThaiHoatDong;
 import Model.Users;
@@ -30,11 +30,11 @@ public class GiangVienController {
     private final DecimalFormat diemFormat = new DecimalFormat("0.##");
 
     @FXML private Label lblStatus;
-    @FXML private TableView<LopHoc> tblClasses;
-    @FXML private TableColumn<LopHoc, String> colClassCode;
-    @FXML private TableColumn<LopHoc, String> colCourseCode;
-    @FXML private TableColumn<LopHoc, String> colSemester;
-    @FXML private TableColumn<LopHoc, String> colEnrollment;
+    @FXML private TableView<LopHocPhan> tblClasses;
+    @FXML private TableColumn<LopHocPhan, String> colClassCode;
+    @FXML private TableColumn<LopHocPhan, String> colCourseCode;
+    @FXML private TableColumn<LopHocPhan, String> colSemester;
+    @FXML private TableColumn<LopHocPhan, String> colEnrollment;
     @FXML private TableView<BangDiemSinhVien> tblStudents;
     @FXML private TableColumn<BangDiemSinhVien, String> colStudentCode;
     @FXML private TableColumn<BangDiemSinhVien, String> colStudentName;
@@ -100,7 +100,7 @@ public class GiangVienController {
 
     @FXML
     private void onSaveGrade() {
-        LopHoc selectedClass = tblClasses.getSelectionModel().getSelectedItem();
+        LopHocPhan selectedClass = tblClasses.getSelectionModel().getSelectedItem();
         BangDiemSinhVien selectedStudent = tblStudents.getSelectionModel().getSelectedItem();
         ThanhPhanDanhGia selectedComponent = cboComponent.getValue();
         if (selectedClass == null || selectedStudent == null || selectedComponent == null) {
@@ -143,7 +143,7 @@ public class GiangVienController {
         cboComponent.getItems().clear();
         removeComponentColumns();
         try {
-            List<LopHoc> classes = diemService.layLopPhuTrach(giangVien);
+            List<LopHocPhan> classes = diemService.layLopPhuTrach(giangVien);
             tblClasses.setItems(FXCollections.observableArrayList(classes));
             if (classes.isEmpty()) {
                 cboComponent.getItems().clear();
@@ -158,7 +158,7 @@ public class GiangVienController {
         }
     }
 
-    private void loadGradebook(LopHoc lopHoc, String maSVCanChon) {
+    private void loadGradebook(LopHocPhan lopHoc, String maSVCanChon) {
         tblStudents.getItems().clear();
         removeComponentColumns();
         ThanhPhanDanhGia componentPreviouslySelected = cboComponent.getValue();

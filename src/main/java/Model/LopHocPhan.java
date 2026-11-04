@@ -3,7 +3,7 @@ package Model;
 /**
  * Model ánh xạ tới bảng LopHoc trong database.
  */
-public class LopHoc {
+public class LopHocPhan {
     private String maLop;
     private String maMon;
     private String maGV;
@@ -12,10 +12,10 @@ public class LopHoc {
     private Integer siSoHienTai;
     private TrangThaiHoatDong trangThai;
 
-    public LopHoc() {
+    public LopHocPhan() {
     }
 
-    public LopHoc(String maLop, String maMon, String maGV, String hocKy,
+    public LopHocPhan(String maLop, String maMon, String maGV, String hocKy,
                   Integer siSoToiDa, Integer siSoHienTai, TrangThaiHoatDong trangThai) {
         this.maLop = maLop;
         this.maMon = maMon;

@@ -2,7 +2,7 @@ package Controllers;
 
 import Model.Admin;
 import Model.GiangVien;
-import Model.LopHoc;
+import Model.LopHocPhan;
 import Model.LopHocDangKy;
 import Model.SinhVien;
 import Model.TrangThaiDangKy;
@@ -165,16 +165,16 @@ public class DashBoardController {
         lblActivityTitle.setText("Lớp học phần phụ trách");
         lblActivitySubtitle.setText("Các lớp đang hoạt động và sĩ số hiện tại.");
 
-        List<LopHoc> classes = diemService.layLopPhuTrach(lecturer).stream()
+        List<LopHocPhan> classes = diemService.layLopPhuTrach(lecturer).stream()
                 .filter(item -> item.getTrangThai() == TrangThaiHoatDong.HOAT_DONG)
                 .toList();
         int enrolledStudents = classes.stream()
-                .map(LopHoc::getSiSoHienTai).filter(value -> value != null)
+                .map(LopHocPhan::getSiSoHienTai).filter(value -> value != null)
                 .mapToInt(Integer::intValue).sum();
         addMetric("LỚP ĐANG PHỤ TRÁCH", Integer.toString(classes.size()), "LỚP", "stat-icon-violet");
         addMetric("SINH VIÊN ĐANG HỌC", Integer.toString(enrolledStudents), "SV", "stat-icon-blue");
         addMetric("HỌC KỲ TRONG PHÂN CÔNG", Long.toString(
-                classes.stream().map(LopHoc::getHocKy).filter(value -> value != null).distinct().count()),
+                classes.stream().map(LopHocPhan::getHocKy).filter(value -> value != null).distinct().count()),
                 "HK", "stat-icon-green");
 
         addProfileDetail("Email", valueOrDash(lecturer.getEmail()));
@@ -208,7 +208,7 @@ public class DashBoardController {
         long activeLecturers = accounts.stream()
                 .filter(GiangVien.class::isInstance)
                 .filter(user -> user.getTrangThai() == TrangThaiHoatDong.HOAT_DONG).count();
-        List<LopHoc> classes = adminService.layDanhSachLopHoc(admin).stream()
+        List<LopHocPhan> classes = adminService.layDanhSachLopHoc(admin).stream()
                 .filter(item -> item.getTrangThai() == TrangThaiHoatDong.HOAT_DONG)
                 .toList();
         long activeCourses = adminService.layDanhSachMonHoc(admin).stream()

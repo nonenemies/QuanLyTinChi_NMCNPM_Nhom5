@@ -8,7 +8,7 @@ import DAO.LopHocDAO;
 import DAO.MonTienQuyetDAO;
 import DAO.ChuongTrinhDaoTaoDAO;
 import Model.YeuCauDoiLop;
-import Model.MonHoc;
+import Model.MonTienQuyet;
 import Model.QuyDinhTinChi;
 import Util.DBConnection;
 import java.util.*;
@@ -26,11 +26,12 @@ public class YeuCauDoiLopService {
         String maMonMuonVao = lopHoc.getMaMon();
 
         // Đọc môn tiên quyết trên cùng kết nối transaction.
-        java.util.List<MonHoc> listTienQuyet = MonTienQuyetDAO.layDanhSachMonTienQuyet(conn, maMonMuonVao);
+        java.util.List<MonTienQuyet> listTienQuyet =
+                MonTienQuyetDAO.layDanhSachMonTienQuyet(conn, maMonMuonVao);
 
         // 3. Quét từng môn
-        for (MonHoc monTQ : listTienQuyet) {
-            String maTienQuyet = monTQ.getMaMon();
+        for (MonTienQuyet monTQ : listTienQuyet) {
+            String maTienQuyet = monTQ.getMaMonTienQuyet();
 
             // 4. GỌI HÀM CỦA BẠN: Có conn
             if (!dangKyDAO.kiemTraDaQuaMon(conn, maSV, maTienQuyet)) {

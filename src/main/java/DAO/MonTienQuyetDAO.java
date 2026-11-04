@@ -1,6 +1,7 @@
 package DAO;
 
 import Model.MonHoc;
+import Model.MonTienQuyet;
 import Model.TrangThaiHoatDong;
 import Util.DBConnection;
 
@@ -92,31 +93,33 @@ public class MonTienQuyetDAO {
     }
 
     /** Lấy danh sách môn phải học trước một môn. */
-    public static List<MonHoc> layDanhSachMonTienQuyet(String maMon) throws SQLException {
+    public static List<MonTienQuyet> layDanhSachMonTienQuyet(String maMon) throws SQLException {
         try (Connection conn = DBConnection.getConnection()) {
             return layDanhSachMonTienQuyet(conn, maMon);
         }
     }
 
     /** Dùng cùng kết nối với transaction đăng ký hoặc đổi lớp. */
-    public static List<MonHoc> layDanhSachMonTienQuyet(Connection conn, String maMon) throws SQLException {
-        String sql = "SELECT mh.MaMon, mh.TenMon, mh.SoTinChi, mh.LoaiMon, mh.MoTa, mh.TrangThai "
+    public static List<MonTienQuyet> layDanhSachMonTienQuyet(Connection conn, String maMon)
+            throws SQLException {
+        String sql = "SELECT mtq.MaMon, mh.MaMon AS MaMonTienQuyet, mh.TenMon, "
+                + "mh.SoTinChi, mh.LoaiMon, mh.MoTa, mh.TrangThai "
                 + "FROM MonTienQuyet mtq JOIN MonHoc mh ON mh.MaMon = mtq.MaMonTienQuyet "
                 + "WHERE mtq.MaMon = ? ORDER BY mh.MaMon";
-        List<MonHoc> danhSach = new ArrayList<>();
+        List<MonTienQuyet> danhSach = new ArrayList<>();
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maMon);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    danhSach.add(new MonHoc(
-                            rs.getString("MaMon"),
+                    MonHoc monTienQuyet = new MonHoc(
+                            rs.getString("MaMonTienQuyet"),
                             rs.getString("TenMon"),
                             rs.getObject("SoTinChi", Integer.class),
                             rs.getString("LoaiMon"),
                             rs.getString("MoTa"),
-                            TrangThaiHoatDong.valueOf(rs.getString("TrangThai"))
-                    ));
+                            TrangThaiHoatDong.valueOf(rs.getString("TrangThai")));
+                    danhSach.add(new MonTienQuyet(rs.getString("MaMon"), monTienQuyet));
                 }
             }
         }

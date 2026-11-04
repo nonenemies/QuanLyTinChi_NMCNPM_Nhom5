@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import DAO.DangKyHocDAO;
 import DAO.LopHocDAO;
 import DAO.MonTienQuyetDAO;
-import Model.MonHoc;
+import Model.MonTienQuyet;
 import Model.DangKyHoc;
 import Model.LopHocDangKy;
 import Model.LopHocThoiKhoaBieu;
@@ -63,9 +63,12 @@ public class DangKyHocService {
                 if (dangKyDAO.coLopBiTrungLich(conn, maSV, maLop, null)) {
                     return rollbackAndReturn(conn, KetQuaDangKy.TRUNG_LICH);
                 }
-                for (MonHoc mon : MonTienQuyetDAO.layDanhSachMonTienQuyet(conn, lopHoc.getMaMon())) {
-                    if (mon.getTrangThai() != Model.TrangThaiHoatDong.HOAT_DONG
-                            || !dangKyDAO.kiemTraDaQuaMon(conn, maSV, mon.getMaMon())) {
+                for (MonTienQuyet prerequisite
+                        : MonTienQuyetDAO.layDanhSachMonTienQuyet(conn, lopHoc.getMaMon())) {
+                    if (prerequisite.getMonTienQuyet().getTrangThai()
+                            != Model.TrangThaiHoatDong.HOAT_DONG
+                            || !dangKyDAO.kiemTraDaQuaMon(conn, maSV,
+                                    prerequisite.getMaMonTienQuyet())) {
                         return rollbackAndReturn(conn, KetQuaDangKy.THIEU_MON_TIEN_QUYET);
                     }
                 }

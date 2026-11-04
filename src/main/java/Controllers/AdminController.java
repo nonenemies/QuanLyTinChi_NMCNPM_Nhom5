@@ -5,6 +5,7 @@ import Model.GiangVien;
 import Model.LopHoc;
 import Model.LichHoc;
 import Model.MonHoc;
+import Model.MonTienQuyet;
 import Model.SinhVien;
 import Model.ThanhPhanDanhGia;
 import Model.TrangThaiHoatDong;
@@ -24,14 +25,13 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
+import javafx.util.StringConverter;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -58,14 +58,11 @@ public class AdminController {
     private final FilteredList<MonHoc> filteredCourses = new FilteredList<>(courses, item -> true);
     private final ObservableList<LopHoc> classes = FXCollections.observableArrayList();
     private final FilteredList<LopHoc> filteredClasses = new FilteredList<>(classes, item -> true);
+    private final ObservableList<MonTienQuyet> prerequisites = FXCollections.observableArrayList();
     private final ObservableList<ThanhPhanDanhGia> components = FXCollections.observableArrayList();
     private final ObservableList<LichHoc> schedules = FXCollections.observableArrayList();
 
-    @FXML private StackPane adminContent;
-    @FXML private ScrollPane accountManagementPane;
-    @FXML private ScrollPane courseManagementPane;
-    @FXML private GridPane studentFields;
-    @FXML private GridPane lecturerFields;
+    @FXML private TabPane adminTabs;
     @FXML private Label lblStatus;
     @FXML private TableView<Users> tblAccounts;
     @FXML private TableColumn<Users, Integer> colUserId;
@@ -103,6 +100,11 @@ public class AdminController {
     @FXML private TextField txtCourseCredits;
     @FXML private TextField txtCourseType;
     @FXML private TextArea txtCourseDescription;
+    @FXML private TableView<MonTienQuyet> tblPrerequisites;
+    @FXML private TableColumn<MonTienQuyet, String> colPrerequisiteCode;
+    @FXML private TableColumn<MonTienQuyet, String> colPrerequisiteName;
+    @FXML private ComboBox<MonHoc> cmbPrerequisite;
+
     @FXML private TableView<LopHoc> tblClasses;
     @FXML private TableColumn<LopHoc, String> colClassCode;
     @FXML private TableColumn<LopHoc, String> colClassCourse;
@@ -160,6 +162,11 @@ public class AdminController {
     private void initialize() {
         configureAccountTable();
         configureCourseTable();
+        configureClassTable();
+        configureComponentTable();
+        configureScheduleTable();
+        colProgramCourseCode.setCellValueFactory(new PropertyValueFactory<>("maMon"));
+        colProgramCourseName.setCellValueFactory(new PropertyValueFactory<>("tenMon"));
         cmbAccountRole.setItems(FXCollections.observableArrayList(STUDENT_ROLE, LECTURER_ROLE));
         cmbAccountRole.getSelectionModel().selectFirst();
         cmbUserStatus.setItems(FXCollections.observableArrayList(TrangThaiHoatDong.values()));
@@ -168,8 +175,10 @@ public class AdminController {
         cmbStudentGender.getSelectionModel().selectFirst();
         tblAccounts.setItems(filteredAccounts);
         tblCourses.setItems(filteredCourses);
+        tblClasses.setItems(filteredClasses);
         txtAccountSearch.textProperty().addListener((o, oldValue, newValue) -> filterAccounts());
         txtCourseSearch.textProperty().addListener((o, oldValue, newValue) -> filterCourses());
+        txtClassSearch.textProperty().addListener((o, oldValue, newValue) -> filterClasses());
         cmbAccountRole.valueProperty().addListener((o, oldValue, role) -> {
             updateRoleFields(role);
             filterAccounts();
@@ -178,6 +187,41 @@ public class AdminController {
                 (o, oldValue, selected) -> populateAccountForm(selected));
         tblCourses.getSelectionModel().selectedItemProperty().addListener(
                 (o, oldValue, selected) -> populateCourseForm(selected));
+        tblClasses.getSelectionModel().selectedItemProperty().addListener(
+                (o, oldValue, selected) -> populateClassForm(selected));
+        tblComponents.getSelectionModel().selectedItemProperty().addListener(
+                (o, oldValue, selected) -> populateComponentForm(selected));
+        tblSchedules.getSelectionModel().selectedItemProperty().addListener(
+                (o, oldValue, selected) -> populateScheduleForm(selected));
+        cmbScheduleClass.valueProperty().addListener(
+                (o, oldValue, selected) -> loadSchedules(selected));
+        cmbComponentCourse.valueProperty().addListener((o, oldValue, selected) -> loadComponents(selected));
+        cmbClassCourse.setConverter(courseConverter());
+        cmbPrerequisite.setConverter(courseConverter());
+        cmbComponentCourse.setConverter(courseConverter());
+        cmbScheduleClass.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(LopHoc courseClass) {
+                return courseClass == null ? "" : courseClass.getMaLop() + " · "
+                        + courseClass.getMaMon() + " · HK " + courseClass.getHocKy();
+            }
+
+            @Override
+            public LopHoc fromString(String value) {
+                return null;
+            }
+        });
+        cmbClassLecturer.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(GiangVien lecturer) {
+                return lecturer == null ? "" : lecturer.getHoTen() + " · " + lecturer.getMaGiangVien();
+            }
+
+            @Override
+            public GiangVien fromString(String value) {
+                return null;
+            }
+        });
         updateRoleFields(cmbAccountRole.getValue());
     }
 
@@ -188,14 +232,9 @@ public class AdminController {
             return;
         }
         admin = authenticatedAdmin;
-        boolean courseManagement = "admin-courses".equals(section);
-        ScrollPane selectedPane = courseManagement ? courseManagementPane : accountManagementPane;
-        selectedPane.setVisible(true);
-        selectedPane.setManaged(true);
-        adminContent.getChildren().setAll(selectedPane);
-        if (!courseManagement) {
-            cmbAccountRole.setValue("admin-lecturers".equals(section) ? LECTURER_ROLE : STUDENT_ROLE);
-        }
+        adminTabs.getSelectionModel().select(sectionIndex(section));
+        if ("admin-students".equals(section)) cmbAccountRole.setValue(STUDENT_ROLE);
+        else if ("admin-lecturers".equals(section)) cmbAccountRole.setValue(LECTURER_ROLE);
         loadAllData();
     }
 
@@ -203,7 +242,10 @@ public class AdminController {
     private void onRefresh() {
         onClearAccountForm();
         onClearCourseForm();
+        onClearClassForm();
+        onClearComponentForm();
         loadAllData();
+        onLoadTermSettings();
     }
 
     @FXML
@@ -323,7 +365,6 @@ public class AdminController {
         tblAccounts.getSelectionModel().clearSelection();
         selectedAccount = null;
         txtUserCode.clear();
-        txtUserCode.setDisable(false);
         txtUserName.clear();
         txtUserEmail.clear();
         txtUserPassword.clear();
@@ -382,6 +423,7 @@ public class AdminController {
             }
             onClearAccountForm();
             loadAccounts();
+            loadLecturers();
             setStatus("Đã ngừng hoạt động tài khoản.", false);
         } catch (ServiceException e) {
             setStatus(e.getMessage(), true);
@@ -398,6 +440,8 @@ public class AdminController {
         txtCourseCredits.clear();
         txtCourseType.clear();
         txtCourseDescription.clear();
+        tblPrerequisites.getItems().clear();
+        cmbPrerequisite.getItems().clear();
     }
 
     @FXML
@@ -443,6 +487,49 @@ public class AdminController {
             onClearCourseForm();
             loadCourses();
             setStatus("Đã ngừng hoạt động môn học.", false);
+        } catch (ServiceException e) {
+            setStatus(e.getMessage(), true);
+        }
+    }
+
+    @FXML
+    private void onAddPrerequisite() {
+        MonHoc prerequisite = cmbPrerequisite.getValue();
+        if (selectedCourse == null || prerequisite == null) {
+            setStatus("Chọn môn học và môn tiên quyết trước.", true);
+            return;
+        }
+        if (selectedCourse.getMaMon().equals(prerequisite.getMaMon())) {
+            setStatus("Môn học không thể là tiên quyết của chính nó.", true);
+            return;
+        }
+        try {
+            if (!adminService.themMonTienQuyet(admin, selectedCourse.getMaMon(), prerequisite.getMaMon())) {
+                setStatus("Không thêm được môn tiên quyết.", true);
+                return;
+            }
+            loadPrerequisites();
+            setStatus("Đã thêm môn tiên quyết.", false);
+        } catch (ServiceException e) {
+            setStatus(e.getMessage(), true);
+        }
+    }
+
+    @FXML
+    private void onRemovePrerequisite() {
+        MonTienQuyet selected = tblPrerequisites.getSelectionModel().getSelectedItem();
+        if (selectedCourse == null || selected == null) {
+            setStatus("Chọn môn tiên quyết cần gỡ.", true);
+            return;
+        }
+        try {
+            if (!adminService.xoaMonTienQuyet(
+                    admin, selectedCourse.getMaMon(), selected.getMaMonTienQuyet())) {
+                setStatus("Quan hệ tiên quyết đã thay đổi.", true);
+                return;
+            }
+            loadPrerequisites();
+            setStatus("Đã gỡ môn tiên quyết.", false);
         } catch (ServiceException e) {
             setStatus(e.getMessage(), true);
         }
@@ -618,6 +705,9 @@ public class AdminController {
         colCourseCredits.setCellValueFactory(new PropertyValueFactory<>("soTinChi"));
         colCourseType.setCellValueFactory(new PropertyValueFactory<>("loaiMon"));
         colCourseStatus.setCellValueFactory(new PropertyValueFactory<>("trangThai"));
+        colPrerequisiteCode.setCellValueFactory(new PropertyValueFactory<>("maMonTienQuyet"));
+        colPrerequisiteName.setCellValueFactory(new PropertyValueFactory<>("tenMonTienQuyet"));
+        tblPrerequisites.setItems(prerequisites);
     }
 
     private void configureClassTable() {
@@ -653,11 +743,30 @@ public class AdminController {
         if (admin == null) return;
         loadAccounts();
         loadCourses();
+        loadClasses();
+        loadLecturers();
+        if (cmbComponentCourse.getValue() == null && !cmbComponentCourse.getItems().isEmpty()) {
+            cmbComponentCourse.getSelectionModel().selectFirst();
+        }
     }
 
     private void loadAccounts() {
         try {
             accounts.setAll(adminService.layDanhSachTaiKhoan(admin));
+            String selectedMajor = cmbProgramMajor.getValue();
+            List<String> majors = accounts.stream()
+                    .map(Users::getKhoa)
+                    .filter(khoa -> khoa != null && !khoa.isBlank())
+                    .map(String::trim)
+                    .distinct()
+                    .sorted(String.CASE_INSENSITIVE_ORDER)
+                    .toList();
+            cmbProgramMajor.setItems(FXCollections.observableArrayList(majors));
+            if (selectedMajor != null && majors.contains(selectedMajor)) {
+                cmbProgramMajor.setValue(selectedMajor);
+            } else if (!majors.isEmpty()) {
+                cmbProgramMajor.getSelectionModel().selectFirst();
+            }
             filterAccounts();
         } catch (ServiceException e) {
             setStatus("Không thể tải tài khoản. Vui lòng kiểm tra kết nối cơ sở dữ liệu.", true);
@@ -668,6 +777,11 @@ public class AdminController {
         try {
             courses.setAll(adminService.layDanhSachMonHoc(admin));
             filterCourses();
+            List<MonHoc> activeCourses = courses.stream()
+                    .filter(course -> course.getTrangThai() == TrangThaiHoatDong.HOAT_DONG).toList();
+            cmbClassCourse.setItems(FXCollections.observableArrayList(activeCourses));
+            cmbComponentCourse.setItems(FXCollections.observableArrayList(activeCourses));
+            updatePrerequisiteChoices();
         } catch (ServiceException e) {
             setStatus(e.getMessage(), true);
         }
@@ -862,6 +976,7 @@ public class AdminController {
     private void populateCourseForm(MonHoc selected) {
         selectedCourse = selected;
         if (selected == null) {
+            tblPrerequisites.getItems().clear();
             return;
         }
         txtCourseCode.setText(selected.getMaMon());
@@ -870,6 +985,31 @@ public class AdminController {
         txtCourseCredits.setText(selected.getSoTinChi().toString());
         txtCourseType.setText(selected.getLoaiMon());
         txtCourseDescription.setText(selected.getMoTa());
+        loadPrerequisites();
+        updatePrerequisiteChoices();
+    }
+
+    private void loadPrerequisites() {
+        if (selectedCourse == null) {
+            prerequisites.clear();
+            return;
+        }
+        try {
+            prerequisites.setAll(adminService.layMonTienQuyet(admin, selectedCourse.getMaMon()));
+            updatePrerequisiteChoices();
+        } catch (ServiceException e) {
+            setStatus(e.getMessage(), true);
+        }
+    }
+
+    private void updatePrerequisiteChoices() {
+        String courseCode = selectedCourse == null ? null : selectedCourse.getMaMon();
+        List<String> assigned = prerequisites.stream().map(MonTienQuyet::getMaMonTienQuyet).toList();
+        cmbPrerequisite.setItems(FXCollections.observableArrayList(courses.stream()
+                .filter(course -> course.getTrangThai() == TrangThaiHoatDong.HOAT_DONG)
+                .filter(course -> !course.getMaMon().equals(courseCode))
+                .filter(course -> !assigned.contains(course.getMaMon()))
+                .toList()));
     }
 
     private void populateClassForm(LopHoc selected) {
@@ -928,11 +1068,39 @@ public class AdminController {
 
     private void updateRoleFields(String role) {
         boolean student = STUDENT_ROLE.equals(role);
-        studentFields.setManaged(student);
-        studentFields.setVisible(student);
-        boolean lecturer = LECTURER_ROLE.equals(role);
-        lecturerFields.setManaged(lecturer);
-        lecturerFields.setVisible(lecturer);
+        for (javafx.scene.Node node : List.of(txtStudentClass, txtStudentCohort, txtStudentDegree,
+                dpStudentBirthDate, cmbStudentGender)) {
+            node.setManaged(student);
+            node.setVisible(student);
+        }
+        for (javafx.scene.Node node : List.of(txtLecturerSpecialty, txtLecturerDegree)) {
+            boolean lecturer = LECTURER_ROLE.equals(role);
+            node.setManaged(lecturer);
+            node.setVisible(lecturer);
+        }
+    }
+
+    private StringConverter<MonHoc> courseConverter() {
+        return new StringConverter<>() {
+            @Override
+            public String toString(MonHoc course) {
+                return course == null ? "" : course.getMaMon() + " · " + course.getTenMon();
+            }
+
+            @Override
+            public MonHoc fromString(String value) {
+                return null;
+            }
+        };
+    }
+
+    private int sectionIndex(String section) {
+        return switch (section) {
+            case "admin-courses" -> 1;
+            case "admin-classes" -> 2;
+            case "admin-components" -> 4;
+            default -> 0;
+        };
     }
 
     private boolean confirm(String title, String detail) {

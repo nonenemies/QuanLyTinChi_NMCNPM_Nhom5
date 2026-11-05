@@ -89,7 +89,7 @@ public class RegistrationController {
         tblRegistered.setFixedCellSize(32);
         filteredClasses.addListener((ListChangeListener<LopHocDangKy>)
                 change -> fitTableHeight(tblClasses));
-        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> applyFilters());
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> searchClass());
         tblClasses.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, selected) -> updateConfirmButton(selected));
         tblRegistered.getSelectionModel().selectedItemProperty().addListener(
@@ -209,7 +209,7 @@ public class RegistrationController {
             List<LopHocDangKy> registeredClasses =
                     registrationService.xemDanhSachLopDaDangKy(student.getMaSo());
             classes.setAll(items);
-            applyFilters();
+            searchClass();
             tblRegistered.getSelectionModel().clearSelection();
             btnCancelRegistration.setDisable(true);
             tblRegistered.setItems(FXCollections.observableArrayList(
@@ -249,7 +249,7 @@ public class RegistrationController {
         }
     }
 
-    private void applyFilters() {
+    private void searchClass() {
         String query = txtSearch.getText() == null ? "" : txtSearch.getText().trim().toLowerCase(Locale.ROOT);
         filteredClasses.setPredicate(item -> {
             String searchable = (item.getMaLop() + " " + item.getMaMon() + " " + item.getTenMon()

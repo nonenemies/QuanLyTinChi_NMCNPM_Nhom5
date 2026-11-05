@@ -36,7 +36,7 @@ public class LoginController {
 
         Users user;
         try {
-            user = authService.login(email, password);
+            user = authService.checkLogin(email, password);
         } catch (ServiceException e) {
             lblError.setText("Không thể đăng nhập do lỗi hệ thống. Vui lòng thử lại sau.");
             lblError.setVisible(true);

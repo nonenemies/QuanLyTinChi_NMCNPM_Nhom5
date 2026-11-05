@@ -43,7 +43,7 @@ public class AdminService {
         }
     }
 
-    public boolean themMonHoc(Admin admin, MonHoc monHoc) {
+    public boolean taoMonHoc(Admin admin, MonHoc monHoc) {
         kiemTraAdminHienTai(admin);
         try {
             return monHocDAO.themMonHoc(monHoc);
@@ -52,7 +52,7 @@ public class AdminService {
         }
     }
 
-    public boolean suaMonHoc(Admin admin, MonHoc monHoc) {
+    public boolean capNhatMonHoc(Admin admin, MonHoc monHoc) {
         kiemTraAdminHienTai(admin);
         try {
             return monHocDAO.suaMonHoc(monHoc);

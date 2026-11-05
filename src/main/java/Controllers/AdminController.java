@@ -231,7 +231,7 @@ public class AdminController {
             MonHoc course = new MonHoc(code, name, credits, type, optional(txtCourseDescription.getText()),
                     selectedCourse == null ? TrangThaiHoatDong.HOAT_DONG : selectedCourse.getTrangThai());
             boolean saved = selectedCourse == null
-                    ? adminService.themMonHoc(admin, course) : adminService.suaMonHoc(admin, course);
+                    ? adminService.taoMonHoc(admin, course) : adminService.capNhatMonHoc(admin, course);
             if (!saved) {
                 setStatus("Không thể lưu môn học.", true);
                 return;

@@ -11,111 +11,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /** Các truy vấn dữ liệu và thao tác sĩ số cho bảng LopHoc. */
 public class LopHocDAO {
-
-    /** Tạo lớp mới; sĩ số hiện tại bắt đầu bằng 0 theo DEFAULT của database. */
-    public boolean themLopHoc(LopHocPhan lopHoc) throws SQLException {
-        Objects.requireNonNull(lopHoc, "lopHoc không được null");
-        String sql = "INSERT INTO LopHoc (MaLop, MaMon, MaGV, HocKy, SiSoToiDa) "
-                + "VALUES (?, ?, ?, ?, ?)";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, lopHoc.getMaLop());
-            ps.setString(2, lopHoc.getMaMon());
-            ps.setString(3, lopHoc.getMaGV());
-            ps.setString(4, lopHoc.getHocKy());
-            ps.setObject(5, lopHoc.getSiSoToiDa());
-            return ps.executeUpdate() == 1;
-        }
-    }
-
-    /** Sửa thông tin lớp; không ghi đè sĩ số hiện tại do dữ liệu có thể đã thay đổi. */
-    public boolean suaLopHoc(LopHocPhan lopHoc) throws SQLException {
-        Objects.requireNonNull(lopHoc, "lopHoc không được null");
-        try (Connection conn = DBConnection.getConnection()) {
-            conn.setAutoCommit(false);
-            try {
-                String selectSql = "SELECT MaMon, MaGV, HocKy, SiSoHienTai "
-                        + "FROM LopHoc WHERE MaLop = ? FOR UPDATE";
-                String maMonHienTai;
-                String maGVHienTai;
-                String hocKyHienTai;
-                int siSoHienTai;
-                try (PreparedStatement ps = conn.prepareStatement(selectSql)) {
-                    ps.setString(1, lopHoc.getMaLop());
-                    try (ResultSet rs = ps.executeQuery()) {
-                        if (!rs.next()) {
-                            conn.rollback();
-                            return false;
-                        }
-                        maMonHienTai = rs.getString("MaMon");
-                        maGVHienTai = rs.getString("MaGV");
-                        hocKyHienTai = rs.getString("HocKy");
-                        siSoHienTai = rs.getInt("SiSoHienTai");
-                    }
-                }
-
-                boolean academicFieldsChanged = !Objects.equals(maMonHienTai, lopHoc.getMaMon())
-                        || !Objects.equals(maGVHienTai, lopHoc.getMaGV())
-                        || !Objects.equals(hocKyHienTai, lopHoc.getHocKy());
-                if (lopHoc.getSiSoToiDa() == null || lopHoc.getSiSoToiDa() < siSoHienTai) {
-                    conn.rollback();
-                    return false;
-                }
-                if (academicFieldsChanged) {
-                    try (PreparedStatement ps = conn.prepareStatement(
-                            "SELECT 1 FROM DangKyHoc WHERE MaLop = ? LIMIT 1")) {
-                        ps.setString(1, lopHoc.getMaLop());
-                        try (ResultSet rs = ps.executeQuery()) {
-                            if (rs.next()) {
-                                conn.rollback();
-                                return false;
-                            }
-                        }
-                    }
-                }
-
-                String updateSql = "UPDATE LopHoc SET MaMon = ?, MaGV = ?, HocKy = ?, SiSoToiDa = ? "
-                        + "WHERE MaLop = ?";
-                try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
-                    ps.setString(1, lopHoc.getMaMon());
-                    ps.setString(2, lopHoc.getMaGV());
-                    ps.setString(3, lopHoc.getHocKy());
-                    ps.setInt(4, lopHoc.getSiSoToiDa());
-                    ps.setString(5, lopHoc.getMaLop());
-                    if (ps.executeUpdate() != 1) {
-                        conn.rollback();
-                        return false;
-                    }
-                }
-                conn.commit();
-                return true;
-            } catch (SQLException | RuntimeException e) {
-                try {
-                    conn.rollback();
-                } catch (SQLException rollbackError) {
-                    e.addSuppressed(rollbackError);
-                }
-                throw e;
-            }
-        }
-    }
-
-    /** Ngừng kích hoạt lớp để giữ lại dữ liệu đăng ký và điểm đã phát sinh. */
-    public boolean xoaLopHoc(String maLop) throws SQLException {
-        String sql = "UPDATE LopHoc SET TrangThai = ? WHERE MaLop = ? AND TrangThai <> ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, TrangThaiHoatDong.NGUNG_HOAT_DONG.name());
-            ps.setString(2, maLop);
-            ps.setString(3, TrangThaiHoatDong.NGUNG_HOAT_DONG.name());
-            return ps.executeUpdate() == 1;
-        }
-    }
 
     /** Lấy các lớp được phân công cho một giảng viên, gồm cả lớp đã kết thúc. */
     public List<LopHocPhan> layDanhSachLopCuaGiangVien(String maGV) throws SQLException {
@@ -194,19 +92,6 @@ public class LopHocDAO {
         return danhSach;
     }
 
-    /** Lấy mọi lớp, gồm cả lớp đã ngừng hoạt động, cho màn hình quản trị. */
-    public List<LopHocPhan> layTatCaLopHoc() throws SQLException {
-        return truyVanDanhSach("SELECT MaLop, MaMon, MaGV, HocKy, SiSoToiDa, SiSoHienTai, TrangThai "
-                + "FROM LopHoc ORDER BY MaLop", null);
-    }
-
-    /** Tìm lớp theo mã, gồm cả lớp đã ngừng hoạt động (tự mở connection). */
-    public LopHocPhan layLopTheoMa(String maLop) throws SQLException {
-        try (Connection conn = DBConnection.getConnection()) {
-            return layLopTheoMa(conn, maLop);
-        }
-    }
-
     /** Tìm lớp theo mã trên connection do bên gọi quản lý, để đọc trong cùng transaction. */
     public LopHocPhan layLopTheoMa(Connection conn, String maLop) throws SQLException {
         String sql = "SELECT MaLop, MaMon, MaGV, HocKy, SiSoToiDa, SiSoHienTai, TrangThai "
@@ -223,13 +108,6 @@ public class LopHocDAO {
         return ketQua.isEmpty() ? null : ketQua.get(0);
     }
 
-    /** Tăng sĩ số nguyên tử nếu lớp còn hoạt động và chưa đầy. */
-    public boolean tangSiSo(String maLop) throws SQLException {
-        try (Connection conn = DBConnection.getConnection()) {
-            return tangSiSo(conn, maLop);
-        }
-    }
-
     /** Tăng sĩ số trên kết nối do bên gọi quản lý, để ghép vào transaction hiện có. */
     public boolean tangSiSo(Connection conn, String maLop) throws SQLException {
         String sql = "UPDATE LopHoc SET SiSoHienTai = SiSoHienTai + 1 "
@@ -238,13 +116,6 @@ public class LopHocDAO {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maLop);
             return ps.executeUpdate() == 1;
-        }
-    }
-
-    /** Giảm sĩ số nguyên tử nếu sĩ số hiện tại lớn hơn 0. */
-    public boolean giamSiSo(String maLop) throws SQLException {
-        try (Connection conn = DBConnection.getConnection()) {
-            return giamSiSo(conn, maLop);
         }
     }
 

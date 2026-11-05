@@ -201,91 +201,8 @@
     -fx-padding: 25 0 0 0;
 }
 
-.dashboard-page {
+.app-page {
     -fx-background-color: #f3f6fc;
-}
-
-.chatbot-page,
-.chatbot-content {
-    -fx-background-color: #f5f7fb;
-}
-
-.chat-scroll-pane {
-    -fx-background-color: #ffffff;
-    -fx-background: #ffffff;
-    -fx-border-color: #e5e9f2;
-    -fx-border-radius: 12;
-    -fx-background-radius: 12;
-    -fx-effect: dropshadow(gaussian, rgba(33, 54, 91, 0.06), 16, 0, 0, 4);
-}
-
-.chat-messages {
-    -fx-background-color: #ffffff;
-}
-
-.chat-message-row {
-    -fx-padding: 1 0;
-}
-
-.chat-bubble-user,
-.chat-bubble-ai {
-    -fx-padding: 11 14;
-    -fx-background-radius: 14;
-    -fx-font-size: 12px;
-}
-
-.chat-bubble-user {
-    -fx-background-color: #4569dc;
-    -fx-text-fill: #ffffff;
-}
-
-.chat-bubble-ai {
-    -fx-background-color: #eef1f6;
-    -fx-text-fill: #273651;
-}
-
-.chat-composer {
-    -fx-padding: 10;
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 12;
-    -fx-border-color: #e5e9f2;
-    -fx-border-radius: 12;
-}
-
-.chat-input {
-    -fx-background-color: #f7f8fb;
-    -fx-background-radius: 9;
-    -fx-border-color: #e3e7ef;
-    -fx-border-radius: 9;
-    -fx-padding: 10 13;
-    -fx-font-size: 12px;
-}
-
-.chat-send-button {
-    -fx-background-color: #4569dc;
-    -fx-background-radius: 9;
-    -fx-text-fill: #ffffff;
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-    -fx-padding: 10 20;
-    -fx-cursor: hand;
-}
-
-.chat-send-button:hover {
-    -fx-background-color: #365bcf;
-}
-
-.chat-status-info,
-.chat-status-error {
-    -fx-font-size: 10px;
-}
-
-.chat-status-info {
-    -fx-text-fill: #68748b;
-}
-
-.chat-status-error {
-    -fx-text-fill: #b52e42;
 }
 
 .app-topbar {
@@ -424,57 +341,6 @@
     -fx-text-fill: #ffd1d6;
 }
 
-.dashboard-content {
-    -fx-background-color: #f3f6fc;
-}
-
-.dashboard-scroll {
-    -fx-background-color: #f3f6fc;
-    -fx-background: #f3f6fc;
-    -fx-border-color: transparent;
-}
-
-.dashboard-sections {
-    -fx-alignment: top-left;
-}
-
-.dashboard-panel {
-    -fx-padding: 18;
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 12;
-    -fx-border-color: #e9edf4;
-    -fx-border-radius: 12;
-    -fx-border-width: 1;
-    -fx-effect: dropshadow(gaussian, rgba(33, 54, 91, 0.045), 14, 0, 0, 3);
-}
-
-.dashboard-panel:hover {
-    -fx-border-color: #dce4f2;
-    -fx-effect: dropshadow(gaussian, rgba(33, 54, 91, 0.08), 18, 0, 0, 5);
-}
-
-.profile-panel {
-    -fx-min-width: 240px;
-    -fx-pref-width: 300px;
-}
-
-.activity-panel {
-    -fx-min-width: 300px;
-    -fx-pref-width: 600px;
-}
-
-.profile-detail-label {
-    -fx-text-fill: #929db0;
-    -fx-font-size: 10px;
-}
-
-.profile-detail-value {
-    -fx-text-fill: #2b3851;
-    -fx-font-size: 10px;
-    -fx-font-weight: bold;
-    -fx-text-alignment: right;
-}
-
 .timetable-lesson-room {
     -fx-text-fill: #365bcf;
     -fx-font-size: 9px;
@@ -550,113 +416,6 @@
     -fx-background-radius: 100;
 }
 
-.orbit-label {
-    -fx-text-fill: #ffffff;
-    -fx-font-size: 10px;
-    -fx-font-weight: bold;
-    -fx-alignment: center;
-    -fx-text-alignment: center;
-}
-
-.stats-row {
-    -fx-fill-height: true;
-}
-
-.stat-card {
-    -fx-padding: 17;
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 12;
-    -fx-border-color: #e9edf4;
-    -fx-border-radius: 12;
-    -fx-border-width: 1;
-    -fx-effect: dropshadow(gaussian, rgba(33, 54, 91, 0.045), 12, 0, 0, 3);
-}
-
-.stat-card:hover {
-    -fx-border-color: #dce4f2;
-    -fx-effect: dropshadow(gaussian, rgba(33, 54, 91, 0.09), 16, 0, 0, 5);
-}
-
-.stat-label {
-    -fx-text-fill: #8d98ab;
-    -fx-font-size: 9px;
-    -fx-font-weight: bold;
-}
-
-.stat-icon {
-    -fx-min-width: 30px;
-    -fx-min-height: 30px;
-    -fx-background-radius: 9;
-}
-
-.stat-icon-blue {
-    -fx-background-color: #edf2ff;
-}
-
-.stat-icon-violet {
-    -fx-background-color: #f2efff;
-}
-
-.stat-icon-green {
-    -fx-background-color: #e9f8f0;
-}
-
-.stat-icon-label {
-    -fx-text-fill: #496bd2;
-    -fx-font-size: 8px;
-    -fx-font-weight: bold;
-}
-
-.stat-icon-violet .stat-icon-label {
-    -fx-text-fill: #8069ce;
-}
-
-.stat-icon-green .stat-icon-label {
-    -fx-text-fill: #2f9b69;
-}
-
-.stat-value {
-    -fx-text-fill: #1f2d47;
-    -fx-font-size: 27px;
-    -fx-font-weight: bold;
-}
-
-.stat-unit {
-    -fx-text-fill: #929db0;
-    -fx-font-size: 10px;
-}
-
-.stat-footnote {
-    -fx-text-fill: #929db0;
-    -fx-font-size: 9px;
-}
-
-.positive-text {
-    -fx-text-fill: #299263;
-}
-
-.progress-track {
-    -fx-min-height: 5px;
-    -fx-max-height: 5px;
-    -fx-background-color: #e9edf5;
-    -fx-background-radius: 5;
-}
-
-.progress-fill {
-    -fx-min-height: 5px;
-    -fx-max-height: 5px;
-    -fx-pref-width: 72px;
-    -fx-max-width: 72px;
-    -fx-background-color: #5879e0;
-    -fx-background-radius: 5;
-}
-
-.progress-caption {
-    -fx-text-fill: #62718e;
-    -fx-font-size: 9px;
-    -fx-font-weight: bold;
-}
-
 .section-heading {
     -fx-padding: 1 0 0 0;
 }
@@ -672,69 +431,116 @@
     -fx-font-size: 10px;
 }
 
+.overview-scroll {
+    -fx-background-color: #f3f6fc;
+    -fx-background: #f3f6fc;
+    -fx-border-color: transparent;
+}
+
+.overview-content {
+    -fx-background-color: #f3f6fc;
+}
+
+.overview-metrics {
+    -fx-fill-height: true;
+}
+
+.overview-metric-card,
+.overview-panel {
+    -fx-padding: 17;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12;
+    -fx-border-color: #e9edf4;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+.overview-metric-label {
+    -fx-text-fill: #8d98ab;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+.overview-metric-value {
+    -fx-text-fill: #1f2d47;
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+}
+
+.overview-metric-icon {
+    -fx-alignment: center;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-background-radius: 9;
+}
+
+.overview-icon-blue {
+    -fx-background-color: #edf2ff;
+}
+
+.overview-icon-violet {
+    -fx-background-color: #f2efff;
+}
+
+.overview-icon-green {
+    -fx-background-color: #e9f8f0;
+}
+
+.overview-metric-icon-label {
+    -fx-text-fill: #496bd2;
+    -fx-font-size: 8px;
+    -fx-font-weight: bold;
+}
+
+.overview-icon-violet .overview-metric-icon-label {
+    -fx-text-fill: #8069ce;
+}
+
+.overview-icon-green .overview-metric-icon-label {
+    -fx-text-fill: #2f9b69;
+}
+
+.overview-panel {
+    -fx-min-width: 240px;
+}
+
+.overview-detail-label,
+.overview-activity-detail {
+    -fx-text-fill: #929db0;
+    -fx-font-size: 10px;
+}
+
+.overview-detail-value,
+.overview-activity-title {
+    -fx-text-fill: #2b3851;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+.overview-activity-row {
+    -fx-padding: 12 14;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+    -fx-border-color: #e9edf4;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+}
+
+.overview-activity-badge {
+    -fx-padding: 6 8;
+    -fx-background-color: #edf2ff;
+    -fx-background-radius: 6;
+    -fx-text-fill: #365bcf;
+    -fx-font-size: 8px;
+    -fx-font-weight: bold;
+}
+
 .text-button {
     -fx-background-color: transparent;
     -fx-text-fill: #4e6ed0;
     -fx-font-size: 10px;
     -fx-font-weight: bold;
     -fx-cursor: hand;
-}
-
-.schedule-list {
-    -fx-padding: 5 0 0 0;
-}
-
-.schedule-row {
-    -fx-padding: 13 16;
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 11;
-    -fx-border-color: #e9edf4;
-    -fx-border-radius: 11;
-    -fx-border-width: 1;
-}
-
-.schedule-date {
-    -fx-padding: 7 0;
-    -fx-background-color: #f2f5ff;
-    -fx-background-radius: 8;
-}
-
-.date-day {
-    -fx-text-fill: #4969c7;
-    -fx-font-size: 17px;
-    -fx-font-weight: bold;
-}
-
-.date-month {
-    -fx-text-fill: #8493ba;
-    -fx-font-size: 7px;
-    -fx-font-weight: bold;
-}
-
-.course-name {
-    -fx-text-fill: #2b3851;
-    -fx-font-size: 11px;
-    -fx-font-weight: bold;
-}
-
-.course-meta {
-    -fx-text-fill: #929db0;
-    -fx-font-size: 9px;
-}
-
-.course-time {
-    -fx-text-fill: #56647d;
-    -fx-font-size: 9px;
-    -fx-font-weight: bold;
-}
-
-.course-status {
-    -fx-padding: 6 8;
-    -fx-background-color: #fff5e4;
-    -fx-background-radius: 6;
-    -fx-text-fill: #bf8323;
-    -fx-font-size: 7px;
-    -fx-font-weight: bold;
 }
 
 .status-violet {
@@ -1123,77 +929,6 @@
 }
 
 .timetable-status-error {
-    -fx-background-color: #fff0f1;
-    -fx-text-fill: #b54050;
-}
-
-.exchange-content {
-    -fx-background-color: #f5f7fb;
-}
-
-.exchange-combo {
-    -fx-pref-height: 38px;
-    -fx-background-color: #f8f9fc;
-    -fx-background-radius: 8;
-    -fx-border-color: #e3e7ef;
-    -fx-border-radius: 8;
-    -fx-font-size: 11px;
-}
-
-.exchange-arrow {
-    -fx-padding: 17 2 0 2;
-    -fx-text-fill: #5574d3;
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-}
-
-.exchange-reason {
-    -fx-padding: 10 12;
-    -fx-background-insets: 0;
-}
-
-.exchange-action {
-    -fx-pref-height: 36px;
-    -fx-padding: 8 15;
-    -fx-font-size: 10px;
-}
-
-.exchange-tabs {
-    -fx-background-color: transparent;
-}
-
-.exchange-tabs > .tab-content-area {
-    -fx-background-color: transparent;
-}
-
-.exchange-tabs > .tab-header-area .tab {
-    -fx-background-color: #edf1f8;
-    -fx-background-radius: 8 8 0 0;
-}
-
-.exchange-tabs > .tab-header-area .tab:selected {
-    -fx-background-color: #ffffff;
-}
-
-.exchange-tabs > .tab-header-area .tab .tab-label {
-    -fx-text-fill: #52617a;
-    -fx-font-size: 10px;
-    -fx-font-weight: bold;
-}
-
-.exchange-message {
-    -fx-padding: 8 12;
-    -fx-background-radius: 8;
-    -fx-font-size: 10px;
-    -fx-font-weight: bold;
-}
-
-.exchange-message-success {
-    -fx-background-color: #eaf7ef;
-    -fx-text-fill: #278256;
-}
-
-.exchange-message-error {
     -fx-background-color: #fff0f1;
     -fx-text-fill: #b54050;
 }

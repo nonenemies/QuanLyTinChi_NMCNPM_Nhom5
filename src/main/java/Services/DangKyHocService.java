@@ -22,10 +22,6 @@ public class DangKyHocService {
     private final LopHocDAO lopHocDAO = new LopHocDAO();
     private final ChuongTrinhDaoTaoDAO chuongTrinhDaoTaoDAO = new ChuongTrinhDaoTaoDAO();
 
-    public boolean xuLyDangKyHoc(String maSV, String maLop) {
-        return dangKyHoc(maSV, maLop) == KetQuaDangKy.THANH_CONG;
-    }
-
     public KetQuaDangKy dangKyHoc(String maSV, String maLop) {
         if (maSV == null || maSV.isBlank() || maLop == null || maLop.isBlank()) {
             return KetQuaDangKy.KHONG_HOP_LE;
@@ -60,7 +56,7 @@ public class DangKyHocService {
                 if (!dangKyDAO.coLichHoc(conn, maLop)) {
                     return rollbackAndReturn(conn, KetQuaDangKy.LOP_CHUA_XEP_LICH);
                 }
-                if (dangKyDAO.coLopBiTrungLich(conn, maSV, maLop, null)) {
+                if (dangKyDAO.coLopBiTrungLich(conn, maSV, maLop)) {
                     return rollbackAndReturn(conn, KetQuaDangKy.TRUNG_LICH);
                 }
                 for (MonTienQuyet prerequisite

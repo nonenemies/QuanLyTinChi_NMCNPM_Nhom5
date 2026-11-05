@@ -50,12 +50,12 @@ public class LoginController {
 
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/views/AppShell.fxml"));
-                Scene dashboardScene = new Scene(fxmlLoader.load(), 1200, 760);
+                Scene appScene = new Scene(fxmlLoader.load(), 1200, 760);
                 AppShellController appShell = fxmlLoader.getController();
                 appShell.start(user);
 
                 Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                currentStage.setScene(dashboardScene);
+                currentStage.setScene(appScene);
                 currentStage.setTitle("Phần mềm Quản lý Tín chỉ - " + user.getHoTen());
                 currentStage.setMinWidth(1000);
                 currentStage.setMinHeight(650);

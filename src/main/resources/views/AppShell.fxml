@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane minHeight="650.0" minWidth="1000.0" prefHeight="760.0" prefWidth="1200.0"
-            styleClass="dashboard-page" stylesheets="@../css/app.css"
+            styleClass="app-page" stylesheets="@../css/app.css"
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="Controllers.AppShellController">
     <left>
@@ -37,7 +37,7 @@
         <VBox spacing="0.0">
             <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="app-topbar">
                 <padding><Insets bottom="18.0" left="30.0" right="30.0" top="18.0" /></padding>
-                <Label fx:id="lblContentTitle" styleClass="topbar-title" text="Tổng quan" />
+                <Label fx:id="lblContentTitle" styleClass="topbar-title" text="Không gian học vụ" />
                 <Region HBox.hgrow="ALWAYS" />
             </HBox>
             <VBox fx:id="contentHost" VBox.vgrow="ALWAYS" />

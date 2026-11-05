@@ -2,8 +2,9 @@ package Controllers;
 
 import Model.Admin;
 import Model.GiangVien;
-import Model.LopHocPhan;
 import Model.LopHocDangKy;
+import Model.LopHocPhan;
+import Model.MonHoc;
 import Model.SinhVien;
 import Model.TrangThaiDangKy;
 import Model.TrangThaiHoatDong;
@@ -16,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.text.DecimalFormat;
@@ -50,7 +52,6 @@ public class DashBoardController {
 
     @FXML
     private void initialize() {
-        lblAccountStatus.setText("");
         lblStatus.setVisible(false);
         lblStatus.setManaged(false);
     }
@@ -85,12 +86,13 @@ public class DashBoardController {
     }
 
     private void loadOverview() {
-        if (loggedInUser == null) return;
         summaryCards.getChildren().clear();
         profileDetails.getChildren().clear();
         activityList.getChildren().clear();
         btnTimetable.setVisible(loggedInUser instanceof SinhVien);
         btnTimetable.setManaged(loggedInUser instanceof SinhVien);
+        lblStatus.setVisible(false);
+        lblStatus.setManaged(false);
 
         try {
             if (loggedInUser instanceof SinhVien student) {
@@ -103,11 +105,9 @@ public class DashBoardController {
                 showError("Vai trò tài khoản không được hỗ trợ.");
             }
         } catch (ServiceException e) {
-            LOGGER.log(Level.SEVERE, "Unable to load dashboard for role " + loggedInUser.getRole(), e);
+            LOGGER.log(Level.SEVERE, "Unable to load overview for role "
+                    + loggedInUser.getRole(), e);
             showError("Không thể tải dữ liệu tổng quan. Vui lòng thử tải lại.");
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "Unexpected error while rendering dashboard.", e);
-            showError("Đã xảy ra lỗi khi hiển thị dữ liệu tổng quan. Vui lòng tải lại.");
         }
     }
 
@@ -115,7 +115,7 @@ public class DashBoardController {
         lblRoleSummary.setText("Thông tin học tập và tiến độ các học phần của bạn.");
         lblProfileTitle.setText("Thông tin sinh viên");
         lblActivityTitle.setText("Học phần đang theo học");
-        lblActivitySubtitle.setText("Danh sách được lấy từ các đăng ký hiện còn hiệu lực.");
+        lblActivitySubtitle.setText("Các đăng ký học phần hiện còn hiệu lực.");
 
         List<LopHocDangKy> registrations = diemService.layKetQuaHocTap(student);
         long activeCourses = registrations.stream()
@@ -132,9 +132,9 @@ public class DashBoardController {
         }
         double gpa = diemService.tinhGpaTichLuy(registrations, null);
         String average = Double.isNaN(gpa) ? "—" : SCORE_FORMAT.format(gpa) + " / 10";
-        addMetric("HỌC PHẦN ĐANG HỌC", Long.toString(activeCourses), "HP", "stat-icon-violet");
-        addMetric("TÍN CHỈ ĐÃ TÍCH LŨY", Long.toString(earnedCredits), "TC", "stat-icon-blue");
-        addMetric("ĐIỂM TRUNG BÌNH", average, "TB", "stat-icon-green");
+        addMetric("HỌC PHẦN ĐANG HỌC", Long.toString(activeCourses), "HP", "overview-icon-blue");
+        addMetric("TÍN CHỈ ĐÃ TÍCH LŨY", Long.toString(earnedCredits), "TC", "overview-icon-violet");
+        addMetric("ĐIỂM TRUNG BÌNH", average, "TB", "overview-icon-green");
 
         addProfileDetail("Email", valueOrDash(student.getEmail()));
         addProfileDetail("Mã sinh viên", valueOrDash(student.getMaSinhVien()));
@@ -156,7 +156,6 @@ public class DashBoardController {
                     item.getDiemTongKet() == null
                             ? "Đang học" : "Điểm " + SCORE_FORMAT.format(item.getDiemTongKet())));
         }
-        showInfo("Điểm trung bình tích lũy lấy điểm cao nhất của mỗi môn, có trọng số theo tín chỉ.");
     }
 
     private void loadLecturerOverview(GiangVien lecturer) {
@@ -168,14 +167,13 @@ public class DashBoardController {
         List<LopHocPhan> classes = diemService.layLopPhuTrach(lecturer).stream()
                 .filter(item -> item.getTrangThai() == TrangThaiHoatDong.HOAT_DONG)
                 .toList();
-        int enrolledStudents = classes.stream()
-                .map(LopHocPhan::getSiSoHienTai).filter(value -> value != null)
-                .mapToInt(Integer::intValue).sum();
-        addMetric("LỚP ĐANG PHỤ TRÁCH", Integer.toString(classes.size()), "LỚP", "stat-icon-violet");
-        addMetric("SINH VIÊN ĐANG HỌC", Integer.toString(enrolledStudents), "SV", "stat-icon-blue");
-        addMetric("HỌC KỲ TRONG PHÂN CÔNG", Long.toString(
-                classes.stream().map(LopHocPhan::getHocKy).filter(value -> value != null).distinct().count()),
-                "HK", "stat-icon-green");
+        int enrolledStudents = classes.stream().map(LopHocPhan::getSiSoHienTai)
+                .filter(value -> value != null).mapToInt(Integer::intValue).sum();
+        long semesters = classes.stream().map(LopHocPhan::getHocKy)
+                .filter(value -> value != null).distinct().count();
+        addMetric("LỚP ĐANG PHỤ TRÁCH", Integer.toString(classes.size()), "LỚP", "overview-icon-blue");
+        addMetric("SINH VIÊN ĐANG HỌC", Integer.toString(enrolledStudents), "SV", "overview-icon-violet");
+        addMetric("HỌC KỲ ĐƯỢC PHÂN CÔNG", Long.toString(semesters), "HK", "overview-icon-green");
 
         addProfileDetail("Email", valueOrDash(lecturer.getEmail()));
         addProfileDetail("Mã giảng viên", valueOrDash(lecturer.getMaGiangVien()));
@@ -189,17 +187,19 @@ public class DashBoardController {
             classes.forEach(item -> addActivity(
                     "Lớp " + item.getMaLop() + " · " + item.getMaMon(),
                     "Học kỳ " + item.getHocKy() + " · Sĩ số "
-                            + item.getSiSoHienTai() + "/" + item.getSiSoToiDa(),
+                            + valueOrDash(item.getSiSoHienTai() == null
+                            ? null : item.getSiSoHienTai().toString()) + "/"
+                            + valueOrDash(item.getSiSoToiDa() == null
+                            ? null : item.getSiSoToiDa().toString()),
                     "Đang hoạt động"));
         }
-        showInfo("Mở mục “Lớp phụ trách và bảng điểm” trên thanh điều hướng để quản lý điểm.");
     }
 
     private void loadAdminOverview(Admin admin) {
-        lblRoleSummary.setText("Tình hình tài khoản, môn học và lớp học phần trong hệ thống.");
+        lblRoleSummary.setText("Tình hình tài khoản và môn học trong hệ thống.");
         lblProfileTitle.setText("Thông tin quản trị viên");
-        lblActivityTitle.setText("Lớp học phần đang hoạt động");
-        lblActivitySubtitle.setText("Tối đa 8 lớp; tình trạng và sĩ số lấy từ dữ liệu hiện tại.");
+        lblActivityTitle.setText("Môn học đang hoạt động");
+        lblActivitySubtitle.setText("Danh sách môn học đang được sử dụng.");
 
         List<Users> accounts = adminService.layDanhSachTaiKhoan(admin);
         long activeStudents = accounts.stream()
@@ -208,51 +208,47 @@ public class DashBoardController {
         long activeLecturers = accounts.stream()
                 .filter(GiangVien.class::isInstance)
                 .filter(user -> user.getTrangThai() == TrangThaiHoatDong.HOAT_DONG).count();
-        List<LopHocPhan> classes = adminService.layDanhSachLopHoc(admin).stream()
-                .filter(item -> item.getTrangThai() == TrangThaiHoatDong.HOAT_DONG)
+        List<MonHoc> activeCourses = adminService.layDanhSachMonHoc(admin).stream()
+                .filter(course -> course.getTrangThai() == TrangThaiHoatDong.HOAT_DONG)
                 .toList();
-        long activeCourses = adminService.layDanhSachMonHoc(admin).stream()
-                .filter(item -> item.getTrangThai() == TrangThaiHoatDong.HOAT_DONG).count();
 
-        addMetric("SINH VIÊN HOẠT ĐỘNG", Long.toString(activeStudents), "SV", "stat-icon-blue");
-        addMetric("GIẢNG VIÊN HOẠT ĐỘNG", Long.toString(activeLecturers), "GV", "stat-icon-violet");
-        addMetric("MÔN / LỚP ĐANG HOẠT ĐỘNG",
-                activeCourses + " / " + classes.size(), "HP", "stat-icon-green");
+        addMetric("SINH VIÊN HOẠT ĐỘNG", Long.toString(activeStudents), "SV", "overview-icon-blue");
+        addMetric("GIẢNG VIÊN HOẠT ĐỘNG", Long.toString(activeLecturers), "GV", "overview-icon-violet");
+        addMetric("MÔN HỌC HOẠT ĐỘNG", Integer.toString(activeCourses.size()), "MH", "overview-icon-green");
 
         addProfileDetail("Email", valueOrDash(admin.getEmail()));
         addProfileDetail("Tài khoản", valueOrDash(admin.getMaSo()));
         addProfileDetail("Họ tên", valueOrDash(admin.getHoTen()));
         addProfileDetail("Khoa", valueOrDash(admin.getKhoa()));
-        addProfileDetail("Trạng thái", admin.getTrangThai() == TrangThaiHoatDong.HOAT_DONG
-                ? "Đang hoạt động" : "Ngừng hoạt động");
+        addProfileDetail("Trạng thái", "Đang hoạt động");
 
-        if (classes.isEmpty()) {
-            addEmptyActivity("Hiện chưa có lớp học phần đang hoạt động.");
+        if (activeCourses.isEmpty()) {
+            addEmptyActivity("Hiện chưa có môn học đang hoạt động.");
         } else {
-            classes.stream().limit(8).forEach(item -> addActivity(
-                    "Lớp " + item.getMaLop() + " · " + item.getMaMon(),
-                    "Học kỳ " + item.getHocKy() + " · Sĩ số "
-                            + item.getSiSoHienTai() + "/" + item.getSiSoToiDa(),
+            activeCourses.stream().limit(8).forEach(course -> addActivity(
+                    valueOrDash(course.getTenMon()),
+                    valueOrDash(course.getMaMon()) + " · "
+                            + valueOrDash(course.getSoTinChi() == null
+                            ? null : course.getSoTinChi() + " tín chỉ"),
                     "Đang hoạt động"));
         }
-        showInfo("Các mục quản trị khác nằm trên thanh điều hướng bên trái.");
     }
 
     private void addMetric(String title, String value, String icon, String iconStyle) {
         Label titleLabel = new Label(title);
-        titleLabel.getStyleClass().add("stat-label");
+        titleLabel.getStyleClass().add("overview-metric-label");
         Label iconLabel = new Label(icon);
-        iconLabel.getStyleClass().add("stat-icon-label");
+        iconLabel.getStyleClass().add("overview-metric-icon-label");
         VBox iconBox = new VBox(iconLabel);
-        iconBox.getStyleClass().addAll("stat-icon", iconStyle);
-        HBox heading = new HBox(titleLabel, new javafx.scene.layout.Region(), iconBox);
+        iconBox.getStyleClass().addAll("overview-metric-icon", iconStyle);
+        HBox heading = new HBox(titleLabel, new Region(), iconBox);
         heading.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
         HBox.setHgrow(heading.getChildren().get(1), Priority.ALWAYS);
 
         Label valueLabel = new Label(value);
-        valueLabel.getStyleClass().add("stat-value");
+        valueLabel.getStyleClass().add("overview-metric-value");
         VBox card = new VBox(14, heading, valueLabel);
-        card.getStyleClass().add("stat-card");
+        card.getStyleClass().add("overview-metric-card");
         HBox.setHgrow(card, Priority.ALWAYS);
         summaryCards.getChildren().add(card);
     }
@@ -260,24 +256,27 @@ public class DashBoardController {
     private void addProfileDetail(String label, String value) {
         HBox row = new HBox(12);
         Label key = new Label(label);
-        key.getStyleClass().add("profile-detail-label");
+        key.getStyleClass().add("overview-detail-label");
         Label detail = new Label(value);
-        detail.getStyleClass().add("profile-detail-value");
+        detail.getStyleClass().add("overview-detail-value");
         detail.setWrapText(true);
-        row.getChildren().addAll(key, new javafx.scene.layout.Region(), detail);
+        row.getChildren().addAll(key, new Region(), detail);
         HBox.setHgrow(row.getChildren().get(1), Priority.ALWAYS);
         profileDetails.getChildren().add(row);
     }
 
     private void addActivity(String title, String detail, String badgeText) {
-        Label titleLabel = new Label(title);
-        titleLabel.getStyleClass().add("course-name");
+        Label titleLabel = new Label(valueOrDash(title));
+        titleLabel.getStyleClass().add("overview-activity-title");
         Label detailLabel = new Label(detail);
-        detailLabel.getStyleClass().add("course-meta");
+        detailLabel.getStyleClass().add("overview-activity-detail");
         detailLabel.setWrapText(true);
         VBox text = new VBox(5, titleLabel, detailLabel);
-        HBox row = new HBox(14, text, badge(badgeText));
-        row.getStyleClass().add("schedule-row");
+        Label badge = new Label(badgeText);
+        badge.getStyleClass().add("overview-activity-badge");
+        badge.setWrapText(true);
+        HBox row = new HBox(14, text, badge);
+        row.getStyleClass().add("overview-activity-row");
         row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
         HBox.setHgrow(text, Priority.ALWAYS);
         activityList.getChildren().add(row);
@@ -290,35 +289,18 @@ public class DashBoardController {
         activityList.getChildren().add(empty);
     }
 
-    private Label badge(String text) {
-        Label label = new Label(text);
-        label.getStyleClass().add("course-status");
-        label.setWrapText(true);
-        return label;
-    }
-
     private String roleLabel(Users user) {
         if (user instanceof SinhVien) return "SINH VIÊN";
         if (user instanceof GiangVien) return "GIẢNG VIÊN";
         if (user instanceof Admin) return "QUẢN TRỊ VIÊN";
-        return user.getRole();
+        return valueOrDash(user.getRole());
     }
 
     private String valueOrDash(String value) {
         return value == null || value.isBlank() ? "—" : value;
     }
 
-    private void showInfo(String message) {
-        lblStatus.getStyleClass().removeAll("teacher-status-error", "teacher-status-info");
-        lblStatus.getStyleClass().add("teacher-status-info");
-        lblStatus.setText(message);
-        lblStatus.setVisible(true);
-        lblStatus.setManaged(true);
-    }
-
     private void showError(String message) {
-        lblStatus.getStyleClass().removeAll("teacher-status-error", "teacher-status-info");
-        lblStatus.getStyleClass().add("teacher-status-error");
         lblStatus.setText(message);
         lblStatus.setVisible(true);
         lblStatus.setManaged(true);

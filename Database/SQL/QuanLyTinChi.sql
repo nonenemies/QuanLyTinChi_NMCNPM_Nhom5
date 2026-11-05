@@ -147,23 +147,6 @@ CREATE TABLE DiemThanhPhan (
     CONSTRAINT chk_diem_giatri CHECK (DiemDatDuoc BETWEEN 0 AND 10)
 ) ENGINE=InnoDB;
 
-CREATE TABLE YeuCauDoiLop (
-    MaYeuCau INT AUTO_INCREMENT PRIMARY KEY,
-    MaSV VARCHAR(20) NOT NULL,
-    LopCu VARCHAR(20) NOT NULL,
-    LopMoi VARCHAR(20) NOT NULL,
-    TrangThai VARCHAR(20) NOT NULL DEFAULT 'CHO_XAC_NHAN',
-    LyDo VARCHAR(200) NULL,
-    NgayTao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    NgayXuLy DATETIME NULL,
-    NguoiXuLy INT NULL,
-    CONSTRAINT fk_doilop_sinhvien FOREIGN KEY (MaSV) REFERENCES SinhVien(MaSV),
-    CONSTRAINT fk_doilop_lopcu FOREIGN KEY (LopCu) REFERENCES LopHoc(MaLop),
-    CONSTRAINT fk_doilop_lopmoi FOREIGN KEY (LopMoi) REFERENCES LopHoc(MaLop),
-    CONSTRAINT fk_doilop_nguoixuly FOREIGN KEY (NguoiXuLy) REFERENCES Users(UserID),
-    CONSTRAINT chk_doilop_khac_lop CHECK (LopCu <> LopMoi)
-) ENGINE=InnoDB;
-
 -- Development sample accounts. Password for every account below: 123.
 INSERT INTO Users (UserID, HoTen, Email, PasswordHash, Role, MaSo, Khoa) VALUES
 (1, 'Quản Trị Viên', 'admin@truong.edu.vn', '123', 'ADMIN', 'AD01', NULL),

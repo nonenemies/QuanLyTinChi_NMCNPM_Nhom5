@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane minHeight="600.0" minWidth="800.0" prefHeight="720.0" prefWidth="1100.0"
-            styleClass="dashboard-page" stylesheets="@../css/app.css"
+            styleClass="app-page" stylesheets="@../css/app.css"
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="Controllers.StudentGradesController">
     <center>

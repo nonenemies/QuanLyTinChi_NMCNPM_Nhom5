@@ -35,6 +35,7 @@ public class StudentGradesController {
     private final DiemService diemService = new DiemService();
     private SinhVien student;
 
+    @FXML private VBox gpaStats;
     @FXML private VBox semesterResults;
     @FXML private Label lblStatus;
     @FXML private Button btnRefresh;
@@ -56,9 +57,11 @@ public class StudentGradesController {
     private void loadResults() {
         if (student == null) return;
         btnRefresh.setDisable(true);
+        gpaStats.getChildren().clear();
         semesterResults.getChildren().clear();
         try {
             List<LopHocDangKy> results = diemService.layKetQuaHocTap(student);
+            displayGpaStats(results);
             if (results.isEmpty()) {
                 showInfo("Chưa có học phần nào được ghi nhận trong bảng điểm.");
                 return;
@@ -80,8 +83,6 @@ public class StudentGradesController {
                 .forEach(result -> grouped.computeIfAbsent(result.getHocKy(), key -> new ArrayList<>()).add(result));
 
         List<String> semesterOrder = new ArrayList<>(grouped.keySet());
-        Set<String> accumulatedCourses = new LinkedHashSet<>();
-        long totalEarnedCredits = 0;
         List<VBox> cards = new ArrayList<>();
 
         for (String semester : semesterOrder) {
@@ -101,18 +102,13 @@ public class StudentGradesController {
                     if (semesterPassedCourses.add(result.getMaMon()) && result.getSoTinChi() != null) {
                         semesterEarnedCredits += result.getSoTinChi();
                     }
-                    if (accumulatedCourses.add(result.getMaMon()) && result.getSoTinChi() != null) {
-                        totalEarnedCredits += result.getSoTinChi();
-                    }
                 }
             }
 
             double semesterAverage = semesterGradedCredits == 0 ? Double.NaN
                     : semesterWeightedScore / semesterGradedCredits;
-            double cumulativeAverage = diemService.tinhGpaTichLuy(results, semester);
 
-            VBox card = createSemesterCard(semester, semesterResults, semesterAverage,
-                    cumulativeAverage, semesterEarnedCredits, totalEarnedCredits);
+            VBox card = createSemesterCard(semester, semesterResults, semesterAverage, semesterEarnedCredits);
             cards.add(card);
         }
         for (int i = cards.size() - 1; i >= 0; i--) {
@@ -122,14 +118,30 @@ public class StudentGradesController {
                 + "Tín chỉ tích lũy chỉ tính các học phần đã hoàn thành và đạt từ 4,0.");
     }
 
+    private void displayGpaStats(List<LopHocDangKy> results) {
+        Set<String> passedCourses = new LinkedHashSet<>();
+        long earnedCredits = 0;
+        for (LopHocDangKy result : results) {
+            if (isPassed(result) && passedCourses.add(result.getMaMon()) && result.getSoTinChi() != null) {
+                earnedCredits += result.getSoTinChi();
+            }
+        }
+
+        HBox summary = new HBox(12,
+                metric("GPA TÍCH LŨY", formatAverage(diemService.tinhGpaTichLuy(results, null))),
+                metric("TÍN CHỈ TÍCH LŨY", earnedCredits + " tín chỉ"));
+        summary.getStyleClass().add("grades-summary");
+        for (javafx.scene.Node child : summary.getChildren()) HBox.setHgrow(child, Priority.ALWAYS);
+        gpaStats.getChildren().setAll(summary);
+    }
+
     private boolean isPassed(LopHocDangKy result) {
         return result.getTrangThaiDangKy() == TrangThaiDangKy.DA_HOAN_THANH
                 && result.getDiemTongKet() != null && result.getDiemTongKet() >= 4.0f;
     }
 
     private VBox createSemesterCard(String semester, List<LopHocDangKy> results,
-                                    double semesterAverage, double cumulativeAverage,
-                                    long semesterCredits, long cumulativeCredits) {
+                                    double semesterAverage, long semesterCredits) {
         Label title = new Label("Học kỳ " + semester);
         title.getStyleClass().add("section-title");
 
@@ -154,9 +166,7 @@ public class StudentGradesController {
 
         HBox summary = new HBox(12,
                 metric("ĐIỂM TB HỌC KỲ", formatAverage(semesterAverage)),
-                metric("ĐIỂM TB TOÀN KHÓA", formatAverage(cumulativeAverage)),
-                metric("TÍN CHỈ ĐẠT TRONG KỲ", semesterCredits + " tín chỉ"),
-                metric("TỔNG TÍN CHỈ TÍCH LŨY", cumulativeCredits + " tín chỉ"));
+                metric("TÍN CHỈ ĐẠT TRONG KỲ", semesterCredits + " tín chỉ"));
         summary.getStyleClass().add("grades-summary");
         for (javafx.scene.Node child : summary.getChildren()) HBox.setHgrow(child, Priority.ALWAYS);
 

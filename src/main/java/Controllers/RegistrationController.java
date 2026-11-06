@@ -14,7 +14,9 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -23,10 +25,13 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.css.PseudoClass;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -116,26 +121,14 @@ public class RegistrationController {
     private void onConfirmRegistration(ActionEvent event) {
         LopHocDangKy selected = tblClasses.getSelectionModel().getSelectedItem();
         if (student == null || selected == null) return;
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmation.setTitle("Xác nhận đăng ký");
-        confirmation.setHeaderText("Đăng ký lớp " + selected.getMaLop() + "?");
-        confirmation.setContentText(selected.getMaMon() + " · " + selected.getTenMon() + " · "
-                + selected.getSoTinChi()
-                + " tín chỉ · Học kỳ " + selected.getHocKy()
-                + " · " + selected.getLichHoc() + " · " + selected.getGiangVien());
-        Optional<javafx.scene.control.ButtonType> response = confirmation.showAndWait();
-        if (response.isEmpty() || response.get() != javafx.scene.control.ButtonType.OK) return;
+        if (!confirmRegistration(selected)) return;
 
         try {
             KetQuaDangKy result = registrationService.dangKyHoc(student.getMaSo(), selected.getMaLop());
             boolean success = result == KetQuaDangKy.THANH_CONG;
             setStatus(success ? "Đăng ký lớp thành công." : "Không thể đăng ký lớp này.", !success);
             if (!success) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Đăng ký không thành công");
-                alert.setHeaderText("Không thể đăng ký lớp " + selected.getMaLop());
-                alert.setContentText(registrationFailureMessage(result));
-                alert.showAndWait();
+                showRegistrationFailure(selected, registrationFailureMessage(result));
             }
             loadClasses();
         } catch (ServiceException e) {
@@ -171,35 +164,103 @@ public class RegistrationController {
             return;
         }
 
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmation.setTitle("Xác nhận hủy đăng ký");
-        confirmation.setHeaderText("Hủy lớp " + selected.getMaLop() + "?");
-        confirmation.setContentText(selected.getTenMon() + " · Học kỳ " + selected.getHocKy()
-                + " · " + selected.getLichHoc()
-                + "\nLớp sẽ được cập nhật sĩ số và bạn có thể đăng ký lại nếu còn chỗ.");
-        Optional<javafx.scene.control.ButtonType> response = confirmation.showAndWait();
-        if (response.isEmpty() || response.get() != javafx.scene.control.ButtonType.OK) {
-            return;
-        }
+        if (!confirmCancellation(selected)) return;
 
         try {
             boolean success = registrationService.huyDangKyHoc(student.getMaSo(), selected.getMaLop());
             setStatus(success ? "Đã hủy đăng ký lớp." : "Không thể hủy đăng ký lớp.", !success);
 
-            Alert alert = new Alert(success ? Alert.AlertType.INFORMATION : Alert.AlertType.WARNING);
-            alert.setTitle(success ? "Đã hủy đăng ký" : "Không thể hủy đăng ký");
-            alert.setHeaderText(selected.getTenMon() + " · " + selected.getMaLop());
-            alert.setContentText(success ? "Lớp đã được xóa khỏi thời khóa biểu."
+            showCancellationResult(selected, success, success
+                    ? "Lớp đã được xóa khỏi thời khóa biểu."
                     : "Lớp không còn đăng ký hoặc đã hoàn thành.");
-            alert.showAndWait();
             loadClasses();
         } catch (ServiceException e) {
             setStatus("Không thể hủy đăng ký do lỗi hệ thống. Vui lòng thử lại sau.", true);
-            showError("Không thể hủy đăng ký do lỗi hệ thống. Vui lòng thử lại sau.");
+            showCancellationResult(selected, false,
+                    "Không thể hủy đăng ký do lỗi hệ thống. Vui lòng thử lại sau.");
         } catch (RuntimeException e) {
             setStatus("Đã xảy ra lỗi khi hủy đăng ký. Vui lòng thử lại sau.", true);
-            showError("Đã xảy ra lỗi khi hủy đăng ký. Vui lòng thử lại sau.");
+            showCancellationResult(selected, false,
+                    "Đã xảy ra lỗi khi hủy đăng ký. Vui lòng thử lại sau.");
         }
+    }
+
+    private boolean confirmRegistration(LopHocDangKy selected) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/views/RegistrationConfirmView.fxml"));
+            Parent view = loader.load();
+            RegistrationConfirmController dialog = loader.getController();
+            dialog.setDetails("Đăng ký lớp " + selected.getMaLop() + "?",
+                    selected.getMaMon() + " · " + selected.getTenMon() + " · "
+                            + selected.getSoTinChi() + " tín chỉ · Học kỳ " + selected.getHocKy()
+                            + " · " + selected.getLichHoc() + " · " + selected.getGiangVien());
+            showModal("Xác nhận đăng ký", view);
+            return dialog.isConfirmed();
+        } catch (IOException | RuntimeException e) {
+            LOGGER.log(Level.SEVERE, "Unable to show registration confirmation.", e);
+            setStatus("Không thể mở hộp thoại xác nhận đăng ký.", true);
+            return false;
+        }
+    }
+
+    private boolean confirmCancellation(LopHocDangKy selected) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/views/CancelRegistrationConfirmView.fxml"));
+            Parent view = loader.load();
+            CancelRegistrationConfirmController dialog = loader.getController();
+            dialog.setDetails("Hủy lớp " + selected.getMaLop() + "?",
+                    selected.getTenMon() + " · Học kỳ " + selected.getHocKy()
+                            + " · " + selected.getLichHoc()
+                            + "\nLớp sẽ được cập nhật sĩ số và bạn có thể đăng ký lại nếu còn chỗ.");
+            showModal("Xác nhận hủy đăng ký", view);
+            return dialog.isConfirmed();
+        } catch (IOException | RuntimeException e) {
+            LOGGER.log(Level.SEVERE, "Unable to show cancellation confirmation.", e);
+            setStatus("Không thể mở hộp thoại xác nhận hủy đăng ký.", true);
+            return false;
+        }
+    }
+
+    private void showRegistrationFailure(LopHocDangKy selected, String message) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/views/RegistrationFailureView.fxml"));
+            Parent view = loader.load();
+            RegistrationFailureController dialog = loader.getController();
+            dialog.setDetails("Không thể đăng ký lớp " + selected.getMaLop(), message);
+            showModal("Đăng ký không thành công", view);
+        } catch (IOException | RuntimeException e) {
+            LOGGER.log(Level.SEVERE, "Unable to show registration failure dialog.", e);
+            setStatus("Không thể đăng ký lớp này. " + message, true);
+        }
+    }
+
+    private void showCancellationResult(LopHocDangKy selected, boolean success, String message) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/views/CancelRegistrationResultView.fxml"));
+            Parent view = loader.load();
+            CancelRegistrationResultController dialog = loader.getController();
+            dialog.setDetails(selected.getTenMon() + " · " + selected.getMaLop(),
+                    success ? "Đã hủy đăng ký" : "Không thể hủy đăng ký", message);
+            showModal(success ? "Đã hủy đăng ký" : "Không thể hủy đăng ký", view);
+        } catch (IOException | RuntimeException e) {
+            LOGGER.log(Level.SEVERE, "Unable to show cancellation result dialog.", e);
+            setStatus(message, !success);
+        }
+    }
+
+    private void showModal(String title, Parent view) {
+        Stage dialog = new Stage();
+        Window owner = lblStatus.getScene().getWindow();
+        dialog.initOwner(owner);
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.setTitle(title);
+        dialog.setResizable(false);
+        dialog.setScene(new Scene(view));
+        dialog.showAndWait();
     }
 
     private void loadClasses() {
@@ -321,9 +382,4 @@ public class RegistrationController {
         lblStatus.setManaged(true);
     }
 
-    private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR, message);
-        alert.setHeaderText("Không thể tiếp tục");
-        alert.showAndWait();
-    }
 }

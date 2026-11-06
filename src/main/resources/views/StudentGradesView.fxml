@@ -28,6 +28,7 @@
             </HBox>
             <Label fx:id="lblStatus" managed="false" visible="false"
                    styleClass="teacher-status-info" wrapText="true" />
+            <VBox fx:id="gpaStats" />
             <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
                 <content>
                     <VBox fx:id="semesterResults" spacing="14.0">

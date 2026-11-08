@@ -9,17 +9,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,12 +67,7 @@ public class AppShellController {
 
     @FXML
     private void onLogout() {
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmation.setTitle("Xác nhận đăng xuất");
-        confirmation.setHeaderText("Bạn muốn đăng xuất khỏi tài khoản?");
-        confirmation.setContentText("Bạn sẽ được đưa về màn hình đăng nhập.");
-        Optional<ButtonType> response = confirmation.showAndWait();
-        if (response.isEmpty() || response.get() != ButtonType.OK) return;
+        if (!confirmLogout()) return;
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/LoginView.fxml"));
@@ -87,6 +81,26 @@ public class AppShellController {
             user = null;
         } catch (IOException | RuntimeException e) {
             showError("Không thể đăng xuất lúc này. Vui lòng thử lại.");
+        }
+    }
+
+    private boolean confirmLogout() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/LogoutConfirmView.fxml"));
+            Parent view = loader.load();
+            LogoutConfirmController dialog = loader.getController();
+            Stage dialogStage = new Stage();
+            dialogStage.initOwner(navigationItems.getScene().getWindow());
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.setTitle("Xác nhận đăng xuất");
+            dialogStage.setResizable(false);
+            dialogStage.setScene(new Scene(view));
+            dialogStage.showAndWait();
+            return dialog.isConfirmed();
+        } catch (IOException | RuntimeException e) {
+            LOGGER.log(Level.SEVERE, "Unable to show logout confirmation.", e);
+            showError("Không thể mở hộp thoại xác nhận đăng xuất.");
+            return false;
         }
     }
 

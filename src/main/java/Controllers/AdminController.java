@@ -49,7 +49,7 @@ public class AdminController {
     @FXML private TableColumn<Users, String> colUserName;
     @FXML private TableColumn<Users, String> colUserEmail;
     @FXML private TableColumn<Users, String> colUserRole;
-    @FXML private TableColumn<Users, String> colUserFaculty;
+    @FXML private TableColumn<Users, String> colUserMajor;
     @FXML private TableColumn<Users, TrangThaiHoatDong> colUserStatus;
     @FXML private TextField txtAccountSearch;
     @FXML private ComboBox<String> cmbAccountRole;
@@ -57,7 +57,7 @@ public class AdminController {
     @FXML private TextField txtUserName;
     @FXML private TextField txtUserEmail;
     @FXML private TextField txtUserPassword;
-    @FXML private TextField txtUserFaculty;
+    @FXML private TextField txtUserMajor;
     @FXML private TextField txtStudentClass;
     @FXML private TextField txtStudentCohort;
     @FXML private TextField txtStudentDegree;
@@ -146,7 +146,7 @@ public class AdminController {
         txtUserEmail.clear();
         txtUserPassword.clear();
         txtUserPassword.setPromptText("Mật khẩu (bắt buộc khi tạo)");
-        txtUserFaculty.clear();
+        txtUserMajor.clear();
         txtStudentClass.clear();
         txtStudentCohort.clear();
         txtStudentDegree.clear();
@@ -272,7 +272,7 @@ public class AdminController {
         colUserName.setCellValueFactory(new PropertyValueFactory<>("hoTen"));
         colUserEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colUserRole.setCellValueFactory(new PropertyValueFactory<>("role"));
-        colUserFaculty.setCellValueFactory(new PropertyValueFactory<>("khoa"));
+        colUserMajor.setCellValueFactory(new PropertyValueFactory<>("nganh"));
         colUserStatus.setCellValueFactory(new PropertyValueFactory<>("trangThai"));
     }
 
@@ -313,7 +313,7 @@ public class AdminController {
         String role = cmbAccountRole.getValue();
         filteredAccounts.setPredicate(account -> (role == null || role.equalsIgnoreCase(account.getRole()))
                 && (account.getMaSo() + " " + account.getHoTen() + " "
-                + account.getEmail() + " " + account.getRole() + " " + account.getKhoa())
+                + account.getEmail() + " " + account.getRole() + " " + account.getNganh())
                 .toLowerCase(Locale.ROOT).contains(query));
     }
 
@@ -334,7 +334,7 @@ public class AdminController {
         txtUserEmail.setText(selected.getEmail());
         txtUserPassword.clear();
         txtUserPassword.setPromptText("Để trống để giữ mật khẩu");
-        txtUserFaculty.setText(selected.getKhoa());
+        txtUserMajor.setText(selected.getNganh());
         cmbUserStatus.setValue(selected.getTrangThai());
         if (selected instanceof SinhVien student) {
             txtStudentClass.setText(student.getLop());
@@ -361,7 +361,7 @@ public class AdminController {
             throw new IllegalArgumentException("Cần nhập mật khẩu cho tài khoản mới.");
         }
         if (selectedAccount != null && password.isBlank()) password = selectedAccount.getPasswordHash();
-        String faculty = optional(txtUserFaculty.getText());
+        String major = optional(txtUserMajor.getText());
         TrangThaiHoatDong status = cmbUserStatus.getValue();
         if (role == null || status == null) throw new IllegalArgumentException("Chọn vai trò và trạng thái tài khoản.");
         if (STUDENT_ROLE.equals(role)) {
@@ -372,13 +372,13 @@ public class AdminController {
                     : "Nữ".equals(genderText) ? Boolean.FALSE : null;
             LocalDate birth = dpStudentBirthDate.getValue();
             return new SinhVien(selectedAccount == null ? null : selectedAccount.getUserID(),
-                    name, email, password, STUDENT_ROLE, code, faculty, null, status,
+                    name, email, password, STUDENT_ROLE, code, major, null, status,
                     code, birth == null ? null : Date.valueOf(birth), gender,
                     optional(txtStudentClass.getText()), cohort, optional(txtStudentDegree.getText()));
         }
         if (LECTURER_ROLE.equals(role)) {
             return new GiangVien(selectedAccount == null ? null : selectedAccount.getUserID(),
-                    name, email, password, LECTURER_ROLE, code, faculty, null, status,
+                    name, email, password, LECTURER_ROLE, code, major, null, status,
                     code, optional(txtLecturerSpecialty.getText()), optional(txtLecturerDegree.getText()));
         }
         throw new IllegalArgumentException("Vai trò tài khoản không hợp lệ.");

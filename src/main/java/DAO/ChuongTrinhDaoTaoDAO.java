@@ -9,9 +9,9 @@ import java.sql.SQLException;
 public class ChuongTrinhDaoTaoDAO {
     public ChuongTrinhDaoTao layChuongTrinhMonHoc(
             Connection conn, String maSV, String maMon) throws SQLException {
-        String sql = "SELECT ct.Khoa, ct.MaMon FROM SinhVien sv "
+        String sql = "SELECT ct.Nganh, ct.MaMon FROM SinhVien sv "
                 + "JOIN Users u ON u.UserID = sv.UserID "
-                + "JOIN ChuongTrinhDaoTao ct ON ct.Khoa = u.Khoa "
+                + "JOIN ChuongTrinhDaoTao ct ON ct.Nganh = u.Nganh "
                 + "JOIN MonHoc mh ON mh.MaMon = ct.MaMon AND mh.TrangThai = 'HOAT_DONG' "
                 + "WHERE sv.MaSV = ? AND ct.MaMon = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -19,7 +19,7 @@ public class ChuongTrinhDaoTaoDAO {
             ps.setString(2, maMon);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next()
-                        ? new ChuongTrinhDaoTao(rs.getString("Khoa"), rs.getString("MaMon"))
+                        ? new ChuongTrinhDaoTao(rs.getString("Nganh"), rs.getString("MaMon"))
                         : null;
             }
         }

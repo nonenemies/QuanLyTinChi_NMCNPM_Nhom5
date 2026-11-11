@@ -142,7 +142,7 @@ public class RegistrationController {
     private String registrationFailureMessage(KetQuaDangKy result) {
         return switch (result) {
             case SINH_VIEN_KHONG_HOAT_DONG -> "Tài khoản sinh viên không còn hoạt động.";
-            case DOT_DANG_KY_DA_DONG -> "Đợt đăng ký của khoa/ngành chưa mở hoặc đã kết thúc.";
+            case DOT_DANG_KY_DA_DONG -> "Đợt đăng ký của ngành chưa mở hoặc đã kết thúc.";
             case LOP_KHONG_HOAT_DONG -> "Lớp đã ngừng hoạt động hoặc hết chỗ.";
             case LOP_CHUA_XEP_LICH -> "Lớp chưa được xếp lịch học.";
             case DA_DANG_KY_MON_TRONG_HOC_KY -> "Bạn đã đăng ký môn này trong học kỳ.";

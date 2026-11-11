@@ -139,7 +139,7 @@ public class DashBoardController {
         addProfileDetail("Email", valueOrDash(student.getEmail()));
         addProfileDetail("Mã sinh viên", valueOrDash(student.getMaSinhVien()));
         addProfileDetail("Lớp", valueOrDash(student.getLop()));
-        addProfileDetail("Khoa", valueOrDash(student.getKhoa()));
+        addProfileDetail("Ngành", valueOrDash(student.getNganh()));
         addProfileDetail("Khóa học", student.getKhoaHoc() == null ? "—" : student.getKhoaHoc().toString());
         addProfileDetail("Hệ đào tạo", valueOrDash(student.getHeDaoTao()));
 
@@ -177,7 +177,7 @@ public class DashBoardController {
 
         addProfileDetail("Email", valueOrDash(lecturer.getEmail()));
         addProfileDetail("Mã giảng viên", valueOrDash(lecturer.getMaGiangVien()));
-        addProfileDetail("Khoa", valueOrDash(lecturer.getKhoa()));
+        addProfileDetail("Ngành", valueOrDash(lecturer.getNganh()));
         addProfileDetail("Chuyên ngành", valueOrDash(lecturer.getChuyenNganh()));
         addProfileDetail("Học vị", valueOrDash(lecturer.getHocVi()));
 
@@ -219,7 +219,7 @@ public class DashBoardController {
         addProfileDetail("Email", valueOrDash(admin.getEmail()));
         addProfileDetail("Tài khoản", valueOrDash(admin.getMaSo()));
         addProfileDetail("Họ tên", valueOrDash(admin.getHoTen()));
-        addProfileDetail("Khoa", valueOrDash(admin.getKhoa()));
+        addProfileDetail("Ngành", valueOrDash(admin.getNganh()));
         addProfileDetail("Trạng thái", "Đang hoạt động");
 
         if (activeCourses.isEmpty()) {

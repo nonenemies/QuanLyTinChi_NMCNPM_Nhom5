@@ -203,7 +203,7 @@ public class AdminService {
                 || taiKhoan.getPasswordHash().length() > 255
                 || taiKhoan.getMaSo() == null || taiKhoan.getMaSo().isBlank()
                 || taiKhoan.getMaSo().length() > 20
-                || (taiKhoan.getKhoa() != null && taiKhoan.getKhoa().length() > 100)
+                || (taiKhoan.getNganh() != null && taiKhoan.getNganh().length() > 100)
                 || taiKhoan.getTrangThai() == null) {
             throw new ServiceException("Thông tin tài khoản không hợp lệ.");
         }

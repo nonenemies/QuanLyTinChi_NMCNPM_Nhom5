@@ -14,7 +14,7 @@ import java.util.Objects;
 /** Truy vấn hồ sơ chuyên môn bổ sung của tài khoản giảng viên. */
 public class GiangVienDAO {
     private static final String SELECT = "SELECT u.UserID, u.HoTen, u.Email, u.PasswordHash, u.Role, "
-            + "u.MaSo, u.Khoa, u.NgayTao, u.TrangThai, gv.MaGV, gv.ChuyenNganh, gv.HocVi "
+            + "u.MaSo, u.Nganh, u.NgayTao, u.TrangThai, gv.MaGV, gv.ChuyenNganh, gv.HocVi "
             + "FROM GiaoVien gv JOIN Users u ON u.UserID = gv.UserID ";
 
     public GiangVien layTheoMaGV(String maGV) throws SQLException {
@@ -86,7 +86,7 @@ public class GiangVienDAO {
     private GiangVien docGiangVien(ResultSet rs) throws SQLException {
         return new GiangVien(rs.getInt("UserID"), rs.getString("HoTen"), rs.getString("Email"),
                 rs.getString("PasswordHash"), rs.getString("Role"), rs.getString("MaSo"),
-                rs.getString("Khoa"), rs.getTimestamp("NgayTao"),
+                rs.getString("Nganh"), rs.getTimestamp("NgayTao"),
                 Model.TrangThaiHoatDong.valueOf(rs.getString("TrangThai")),
                 rs.getString("MaGV"), rs.getString("ChuyenNganh"), rs.getString("HocVi"));
     }

@@ -59,8 +59,8 @@ public class LopHocDAO {
                 : "WHERE (lh.TrangThai = 'HOAT_DONG' AND mh.TrangThai = 'HOAT_DONG' "
                 + "AND EXISTS (SELECT 1 FROM SinhVien sv "
                 + "JOIN Users u ON u.UserID = sv.UserID "
-                + "JOIN DotDangKyNganh dot ON dot.Khoa = u.Khoa "
-                + "JOIN ChuongTrinhDaoTao ct ON ct.Khoa = u.Khoa AND ct.MaMon = lh.MaMon "
+                + "JOIN DotDangKyNganh dot ON dot.Nganh = u.Nganh "
+                + "JOIN ChuongTrinhDaoTao ct ON ct.Nganh = u.Nganh AND ct.MaMon = lh.MaMon "
                 + "WHERE sv.MaSV = ? AND CURRENT_TIMESTAMP BETWEEN dot.MoDangKy AND dot.DongDangKy "
                 + ")) OR dk.MaDangKy IS NOT NULL ")
                 + "ORDER BY lh.HocKy DESC, mh.MaMon, lh.MaLop";

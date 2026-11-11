@@ -153,7 +153,8 @@ public class DiemDAO {
                 hocKy = rs.getString("HocKy");
             }
         }
-        if (!new CauHinhHocKyDAO().dangTrongDotNhapDiem(conn, hocKy)) return false;
+
+        if (new CauHinhHocKyDAO().layCauHinhTrongDotNhapDiem(conn, hocKy) == null) return false;
 
         String componentSql = "SELECT 1 FROM ThanhPhanDanhGia tp "
                 + "JOIN LopHoc lh ON lh.MaMon = tp.MaMon "

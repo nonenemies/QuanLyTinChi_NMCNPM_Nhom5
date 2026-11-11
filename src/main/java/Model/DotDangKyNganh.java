@@ -2,5 +2,5 @@ package Model;
 
 import java.time.LocalDateTime;
 
-public record DotDangKyNganh(String khoa, LocalDateTime moDangKy, LocalDateTime dongDangKy) {
+public record DotDangKyNganh(String nganh, LocalDateTime moDangKy, LocalDateTime dongDangKy) {
 }

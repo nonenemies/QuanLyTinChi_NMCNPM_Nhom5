@@ -24,7 +24,7 @@
                 <VBox spacing="3.0" HBox.hgrow="ALWAYS">
                     <Label styleClass="registration-title" text="Đăng ký tín chỉ" />
                     <Label styleClass="registration-subtitle"
-                           text="Danh sách lớp thuộc chương trình đào tạo và đợt đăng ký của khoa/ngành." />
+                           text="Danh sách lớp thuộc chương trình đào tạo và đợt đăng ký của ngành." />
                 </VBox>
                 <Button onAction="#onRefresh" styleClass="registration-refresh-button" text="↻  Tải lại" />
             </HBox>

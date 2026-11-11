@@ -9,16 +9,16 @@ import java.sql.SQLException;
 
 public class DotDangKyNganhDAO {
     public DotDangKyNganh layDotDangKyHienTai(Connection conn, String maSV) throws SQLException {
-        String sql = "SELECT dot.Khoa, dot.MoDangKy, dot.DongDangKy "
+        String sql = "SELECT dot.Nganh, dot.MoDangKy, dot.DongDangKy "
                 + "FROM SinhVien sv JOIN Users u ON u.UserID = sv.UserID "
-                + "JOIN DotDangKyNganh dot ON dot.Khoa = u.Khoa "
+                + "JOIN DotDangKyNganh dot ON dot.Nganh = u.Nganh "
                 + "WHERE sv.MaSV = ? AND CURRENT_TIMESTAMP BETWEEN dot.MoDangKy AND dot.DongDangKy";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maSV);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) return null;
                 return new DotDangKyNganh(
-                        rs.getString("Khoa"),
+                        rs.getString("Nganh"),
                         rs.getTimestamp("MoDangKy").toLocalDateTime(),
                         rs.getTimestamp("DongDangKy").toLocalDateTime());
             }

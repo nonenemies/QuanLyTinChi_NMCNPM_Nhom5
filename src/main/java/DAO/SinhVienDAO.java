@@ -14,7 +14,7 @@ import java.util.Objects;
 /** Truy vấn hồ sơ học tập bổ sung của tài khoản sinh viên. */
 public class SinhVienDAO {
     private static final String SELECT = "SELECT u.UserID, u.HoTen, u.Email, u.PasswordHash, u.Role, "
-            + "u.MaSo, u.Khoa, u.NgayTao, u.TrangThai, sv.MaSV, sv.NgaySinh, sv.GioiTinh, "
+            + "u.MaSo, u.Nganh, u.NgayTao, u.TrangThai, sv.MaSV, sv.NgaySinh, sv.GioiTinh, "
             + "sv.Lop, sv.KhoaHoc, sv.HeDaoTao FROM SinhVien sv "
             + "JOIN Users u ON u.UserID = sv.UserID ";
 
@@ -100,7 +100,7 @@ public class SinhVienDAO {
         Boolean gioiTinh = rs.getObject("GioiTinh", Boolean.class);
         return new SinhVien(rs.getInt("UserID"), rs.getString("HoTen"), rs.getString("Email"),
                 rs.getString("PasswordHash"), rs.getString("Role"), rs.getString("MaSo"),
-                rs.getString("Khoa"), rs.getTimestamp("NgayTao"),
+                rs.getString("Nganh"), rs.getTimestamp("NgayTao"),
                 Model.TrangThaiHoatDong.valueOf(rs.getString("TrangThai")), rs.getString("MaSV"),
                 rs.getDate("NgaySinh"), gioiTinh, rs.getString("Lop"),
                 rs.getObject("KhoaHoc", Integer.class), rs.getString("HeDaoTao"));

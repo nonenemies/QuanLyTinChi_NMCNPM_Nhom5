@@ -12,10 +12,10 @@ public class SinhVien extends Users {
 
     public SinhVien(Integer userID, String hoTen, String email,
                     String passwordHash, String role, String maSo,
-                    String khoa, Date ngayTao, TrangThaiHoatDong trangThai,
+                    String nganh, Date ngayTao, TrangThaiHoatDong trangThai,
                     String maSinhVien, Date ngaySinh, Boolean gioiTinh,
                     String lop, Integer khoaHoc, String heDaoTao) {
-        super(userID, hoTen, email, passwordHash, role, maSo, khoa, ngayTao, trangThai);
+        super(userID, hoTen, email, passwordHash, role, maSo, nganh, ngayTao, trangThai);
         this.maSinhVien = maSinhVien;
         this.ngaySinh = ngaySinh;
         this.gioiTinh = gioiTinh;

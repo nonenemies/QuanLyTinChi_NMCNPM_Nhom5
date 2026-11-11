@@ -33,7 +33,7 @@
                 <VBox spacing="10.0">
                     <padding><Insets bottom="12.0" left="10.0" right="10.0" top="10.0" /></padding>
                     <HBox alignment="CENTER_LEFT" spacing="10.0">
-                        <TextField fx:id="txtAccountSearch" promptText="Tìm mã, họ tên, email, khoa..." HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="txtAccountSearch" promptText="Tìm mã, họ tên, email, ngành..." HBox.hgrow="ALWAYS" />
                         <ComboBox fx:id="cmbAccountRole" promptText="Vai trò" prefWidth="160.0" />
                     </HBox>
                     <TableView fx:id="tblAccounts" prefHeight="220.0" VBox.vgrow="ALWAYS">
@@ -43,7 +43,7 @@
                             <TableColumn fx:id="colUserName" text="Họ tên" prefWidth="155.0" />
                             <TableColumn fx:id="colUserEmail" text="Email" prefWidth="170.0" />
                             <TableColumn fx:id="colUserRole" text="Vai trò" prefWidth="90.0" />
-                            <TableColumn fx:id="colUserFaculty" text="Khoa" prefWidth="110.0" />
+                            <TableColumn fx:id="colUserMajor" text="Ngành" prefWidth="110.0" />
                             <TableColumn fx:id="colUserStatus" text="Trạng thái" prefWidth="120.0" />
                         </columns>
                     </TableView>
@@ -56,7 +56,7 @@
                         <TextField fx:id="txtUserName" promptText="Họ và tên" GridPane.columnIndex="1" GridPane.rowIndex="0" />
                         <TextField fx:id="txtUserEmail" promptText="Email" GridPane.columnIndex="0" GridPane.rowIndex="1" />
                         <TextField fx:id="txtUserPassword" promptText="Mật khẩu (bỏ trống khi sửa)" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <TextField fx:id="txtUserFaculty" promptText="Khoa" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                        <TextField fx:id="txtUserMajor" promptText="Ngành" GridPane.columnIndex="0" GridPane.rowIndex="2" />
                         <ComboBox fx:id="cmbUserStatus" promptText="Trạng thái" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                     </GridPane>
                     <GridPane fx:id="studentFields" hgap="10.0" vgap="8.0">

@@ -9,12 +9,12 @@ public abstract class Users {
     protected String passwordHash;
     protected String role;
     protected String maSo;
-    protected String khoa;
+    protected String nganh;
     protected Date ngayTao;
     protected TrangThaiHoatDong trangThai;
 
     public Users(Integer userID, String hoTen, String email, String passwordHash,
-                 String role, String maSo, String khoa,
+                 String role, String maSo, String nganh,
                  Date ngayTao, TrangThaiHoatDong trangThai) {
         this.userID = userID;
         this.hoTen = hoTen;
@@ -22,7 +22,7 @@ public abstract class Users {
         this.passwordHash = passwordHash;
         this.role = role;
         this.maSo = maSo;
-        this.khoa = khoa;
+        this.nganh = nganh;
         this.ngayTao = ngayTao;
         this.trangThai = trangThai;
     }
@@ -75,12 +75,12 @@ public abstract class Users {
         this.maSo = maSo;
     }
 
-    public String getKhoa() {
-        return khoa;
+    public String getNganh() {
+        return nganh;
     }
 
-    public void setKhoa(String khoa) {
-        this.khoa = khoa;
+    public void setNganh(String nganh) {
+        this.nganh = nganh;
     }
 
     public Date getNgayTao() {

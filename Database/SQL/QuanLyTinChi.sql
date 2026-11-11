@@ -1,6 +1,7 @@
 -- Fresh development/test database setup.
 -- WARNING: running this script drops the existing QuanLyTinChi database and all its data.
 -- Sample accounts use the development-only password "123"; do not use this script in production.
+SET SQL_SAFE_UPDATES = 0;
 DROP DATABASE IF EXISTS QuanLyTinChi;
 CREATE DATABASE QuanLyTinChi CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE QuanLyTinChi;
@@ -12,7 +13,7 @@ CREATE TABLE Users (
     PasswordHash VARCHAR(255) NOT NULL,
     Role VARCHAR(20) NOT NULL,
     MaSo VARCHAR(20) UNIQUE,
-    Khoa VARCHAR(100) NULL,
+    Nganh VARCHAR(100) NULL,
     NgayTao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     TrangThai ENUM('HOAT_DONG', 'NGUNG_HOAT_DONG') NOT NULL DEFAULT 'HOAT_DONG'
 ) ENGINE=InnoDB;
@@ -61,7 +62,7 @@ CREATE TABLE MonTienQuyet (
     CONSTRAINT chk_tienquyet_khac_mon CHECK (MaMon <> MaMonTienQuyet)
 ) ENGINE=InnoDB;
 
-CREATE TABLE LopHoc (
+CREATE TABLE LopHocPhan (
     MaLop VARCHAR(20) PRIMARY KEY,
     MaMon VARCHAR(20) NOT NULL,
     MaGV VARCHAR(20) NULL,
@@ -69,9 +70,9 @@ CREATE TABLE LopHoc (
     SiSoToiDa INT NOT NULL,
     SiSoHienTai INT NOT NULL DEFAULT 0,
     TrangThai ENUM('HOAT_DONG', 'NGUNG_HOAT_DONG') NOT NULL DEFAULT 'HOAT_DONG',
-    CONSTRAINT fk_lophoc_mon FOREIGN KEY (MaMon) REFERENCES MonHoc(MaMon),
-    CONSTRAINT fk_lophoc_giaovien FOREIGN KEY (MaGV) REFERENCES GiaoVien(MaGV),
-    CONSTRAINT chk_lophoc_siso CHECK (
+    CONSTRAINT fk_lophocphan_mon FOREIGN KEY (MaMon) REFERENCES MonHoc(MaMon),
+    CONSTRAINT fk_lophocphan_giaovien FOREIGN KEY (MaGV) REFERENCES GiaoVien(MaGV),
+    CONSTRAINT chk_lophocphan_siso CHECK (
         SiSoToiDa > 0 AND SiSoHienTai >= 0 AND SiSoHienTai <= SiSoToiDa
     )
 ) ENGINE=InnoDB;
@@ -86,14 +87,14 @@ CREATE TABLE CauHinhHocKy (
 ) ENGINE=InnoDB;
 
 CREATE TABLE ChuongTrinhDaoTao (
-    Khoa VARCHAR(100) NOT NULL,
+    Nganh VARCHAR(100) NOT NULL,
     MaMon VARCHAR(20) NOT NULL,
-    PRIMARY KEY (Khoa, MaMon),
+    PRIMARY KEY (Nganh, MaMon),
     CONSTRAINT fk_ctdt_mon FOREIGN KEY (MaMon) REFERENCES MonHoc(MaMon)
 ) ENGINE=InnoDB;
 
 CREATE TABLE DotDangKyNganh (
-    Khoa VARCHAR(100) PRIMARY KEY,
+    Nganh VARCHAR(100) PRIMARY KEY,
     MoDangKy DATETIME NOT NULL,
     DongDangKy DATETIME NOT NULL,
     CONSTRAINT chk_dotdangky_thoigian CHECK (DongDangKy > MoDangKy)
@@ -106,7 +107,7 @@ CREATE TABLE LichHoc (
     GioBatDau TIME NOT NULL,
     GioKetThuc TIME NOT NULL,
     PhongHoc VARCHAR(50) NULL,
-    CONSTRAINT fk_lichhoc_lop FOREIGN KEY (MaLop) REFERENCES LopHoc(MaLop),
+    CONSTRAINT fk_lichhoc_lop FOREIGN KEY (MaLop) REFERENCES LopHocPhan(MaLop),
     CONSTRAINT chk_lichhoc_thu CHECK (Thu BETWEEN 2 AND 8),
     CONSTRAINT chk_lichhoc_gio CHECK (GioBatDau < GioKetThuc)
 ) ENGINE=InnoDB;
@@ -131,7 +132,7 @@ CREATE TABLE DangKyHoc (
     NgayDangKy DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     DiemTongKet DECIMAL(5,2) NULL,
     TrangThai VARCHAR(20) NOT NULL DEFAULT 'DANG_HOC',
-    CONSTRAINT fk_dangky_lop FOREIGN KEY (MaLop) REFERENCES LopHoc(MaLop),
+    CONSTRAINT fk_dangky_lop FOREIGN KEY (MaLop) REFERENCES LopHocPhan(MaLop),
     CONSTRAINT fk_dangky_sinhvien FOREIGN KEY (MaSV) REFERENCES SinhVien(MaSV)
 ) ENGINE=InnoDB;
 
@@ -148,7 +149,7 @@ CREATE TABLE DiemThanhPhan (
 ) ENGINE=InnoDB;
 
 -- Development sample accounts. Password for every account below: 123.
-INSERT INTO Users (UserID, HoTen, Email, PasswordHash, Role, MaSo, Khoa) VALUES
+INSERT INTO Users (UserID, HoTen, Email, PasswordHash, Role, MaSo, Nganh) VALUES
 (1, 'Quản Trị Viên', 'admin@truong.edu.vn', '123', 'ADMIN', 'AD01', NULL),
 (2, 'Thầy Trần Code', 'code.tran@truong.edu.vn', '123', 'GIAOVIEN', 'GV01', 'CNTT'),
 (3, 'Nguyễn Văn Sinh', 'sinh.nguyen@sv.edu.vn', '123', 'SINHVIEN', 'SV001', 'CNTT'),
@@ -170,8 +171,8 @@ INSERT INTO MonHoc (MaMon, TenMon, SoTinChi, LoaiMon, MoTa) VALUES
 ('IT04', 'Phân tích thiết kế hệ thống', 3, 'BATBUOC', 'Phân tích yêu cầu và thiết kế hệ thống thông tin.'),
 ('IT05', 'Mạng máy tính', 3, 'BATBUOC', 'Kiến thức nền tảng về mạng máy tính.');
 
--- Curriculum is preloaded for the sample department before registration opens.
-INSERT INTO ChuongTrinhDaoTao (Khoa, MaMon) VALUES
+-- Curriculum is preloaded for the sample major.
+INSERT INTO ChuongTrinhDaoTao (Nganh, MaMon) VALUES
 ('CNTT', 'IT01'),
 ('CNTT', 'IT02'),
 ('CNTT', 'IT03'),
@@ -179,10 +180,13 @@ INSERT INTO ChuongTrinhDaoTao (Khoa, MaMon) VALUES
 ('CNTT', 'IT05');
 
 -- The sample registration period is open for 30 days from database setup.
+INSERT INTO DotDangKyNganh (Nganh, MoDangKy, DongDangKy)
+VALUES ('CNTT', CURRENT_TIMESTAMP, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 30 DAY));
+
 INSERT INTO CauHinhHocKy (HocKy, KetThucHocKy, HanNhapDiem)
 VALUES ('2026-2', '2026-12-31', '2027-01-31 23:59:00');
 
-INSERT INTO LopHoc (MaLop, MaMon, MaGV, HocKy, SiSoToiDa) VALUES
+INSERT INTO LopHocPhan (MaLop, MaMon, MaGV, HocKy, SiSoToiDa) VALUES
 ('OOP_L01', 'IT01', 'GV01', '2026-2', 40),
 ('DB_L01', 'IT02', 'GV01', '2026-2', 40),
 ('DSA_L01', 'IT03', 'GV01', '2026-2', 40),
@@ -202,3 +206,4 @@ INSERT INTO ThanhPhanDanhGia (MaMon, TenThanhPhan, TrongSo, ThuTu) VALUES
 ('IT03', 'Giữa kỳ', 0.30, 1), ('IT03', 'Cuối kỳ', 0.70, 2),
 ('IT04', 'Giữa kỳ', 0.30, 1), ('IT04', 'Cuối kỳ', 0.70, 2),
 ('IT05', 'Giữa kỳ', 0.30, 1), ('IT05', 'Cuối kỳ', 0.70, 2);
+SET SQL_SAFE_UPDATES = 1;

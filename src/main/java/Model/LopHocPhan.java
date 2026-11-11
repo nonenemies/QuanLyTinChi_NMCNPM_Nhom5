@@ -1,7 +1,7 @@
 package Model;
 
 /**
- * Model ánh xạ tới bảng LopHoc trong database.
+ * Model ánh xạ tới bảng LopHocPhan trong database.
  */
 public class LopHocPhan {
     private String maLop;

@@ -12,13 +12,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Các truy vấn dữ liệu và thao tác sĩ số cho bảng LopHoc. */
+/** Các truy vấn dữ liệu và thao tác sĩ số cho bảng LopHocPhan. */
 public class LopHocDAO {
 
     /** Lấy các lớp được phân công cho một giảng viên, gồm cả lớp đã kết thúc. */
     public List<LopHocPhan> layDanhSachLopCuaGiangVien(String maGV) throws SQLException {
         String sql = "SELECT MaLop, MaMon, MaGV, HocKy, SiSoToiDa, SiSoHienTai, TrangThai "
-                + "FROM LopHoc WHERE MaGV = ? ORDER BY HocKy DESC, MaLop";
+                + "FROM LopHocPhan WHERE MaGV = ? ORDER BY HocKy DESC, MaLop";
         return truyVanDanhSach(sql, maGV);
     }
 
@@ -41,7 +41,7 @@ public class LopHocDAO {
                 + "mh.SoTinChi, lh.SiSoHienTai, lh.SiSoToiDa, "
                 + "CASE WHEN dk.MaDangKy IS NULL THEN 0 ELSE 1 END AS DaDangKy, "
                 + "dk.TrangThai AS TrangThaiDangKy "
-                + "FROM LopHoc lh "
+                + "FROM LopHocPhan lh "
                 + "JOIN MonHoc mh ON mh.MaMon = lh.MaMon "
                 + "LEFT JOIN GiaoVien gv ON gv.MaGV = lh.MaGV "
                 + "LEFT JOIN Users u ON u.UserID = gv.UserID "
@@ -95,7 +95,7 @@ public class LopHocDAO {
     /** Tìm lớp theo mã trên connection do bên gọi quản lý, để đọc trong cùng transaction. */
     public LopHocPhan layLopTheoMa(Connection conn, String maLop) throws SQLException {
         String sql = "SELECT MaLop, MaMon, MaGV, HocKy, SiSoToiDa, SiSoHienTai, TrangThai "
-                + "FROM LopHoc WHERE MaLop = ?";
+                + "FROM LopHocPhan WHERE MaLop = ?";
         List<LopHocPhan> ketQua = truyVanDanhSach(conn, sql, maLop);
         return ketQua.isEmpty() ? null : ketQua.get(0);
     }
@@ -103,14 +103,14 @@ public class LopHocDAO {
     /** Khóa lớp khi đăng ký để các lượt đăng ký cùng lớp được xử lý tuần tự. */
     public LopHocPhan layLopTheoMaForUpdate(Connection conn, String maLop) throws SQLException {
         String sql = "SELECT MaLop, MaMon, MaGV, HocKy, SiSoToiDa, SiSoHienTai, TrangThai "
-                + "FROM LopHoc WHERE MaLop = ? FOR UPDATE";
+                + "FROM LopHocPhan WHERE MaLop = ? FOR UPDATE";
         List<LopHocPhan> ketQua = truyVanDanhSach(conn, sql, maLop);
         return ketQua.isEmpty() ? null : ketQua.get(0);
     }
 
     /** Tăng sĩ số trên kết nối do bên gọi quản lý, để ghép vào transaction hiện có. */
     public boolean tangSiSo(Connection conn, String maLop) throws SQLException {
-        String sql = "UPDATE LopHoc SET SiSoHienTai = SiSoHienTai + 1 "
+        String sql = "UPDATE LopHocPhan SET SiSoHienTai = SiSoHienTai + 1 "
                 + "WHERE MaLop = ? AND TrangThai = '" + TrangThaiHoatDong.HOAT_DONG.name()
                 + "' AND SiSoHienTai < SiSoToiDa";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -121,7 +121,7 @@ public class LopHocDAO {
 
     /** Giảm sĩ số trên kết nối do bên gọi quản lý, để ghép vào transaction hiện có. */
     public boolean giamSiSo(Connection conn, String maLop) throws SQLException {
-        String sql = "UPDATE LopHoc SET SiSoHienTai = SiSoHienTai - 1 "
+        String sql = "UPDATE LopHocPhan SET SiSoHienTai = SiSoHienTai - 1 "
                 + "WHERE MaLop = ? AND SiSoHienTai > 0";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maLop);

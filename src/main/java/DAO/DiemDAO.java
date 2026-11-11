@@ -26,7 +26,7 @@ public class DiemDAO {
                 + "COALESCE(lich.LichHoc, 'Chưa xếp lịch') AS LichHoc, "
                 + "CASE WHEN lich.MaLop IS NULL THEN 0 ELSE 1 END AS CoLichHoc "
                 + "FROM DangKyHoc dk "
-                + "JOIN LopHoc lh ON lh.MaLop = dk.MaLop "
+                + "JOIN LopHocPhan lh ON lh.MaLop = dk.MaLop "
                 + "JOIN MonHoc mh ON mh.MaMon = lh.MaMon "
                 + "LEFT JOIN ("
                 + "SELECT MaLop, GROUP_CONCAT(CONCAT('Thứ ', Thu, ' ', "
@@ -69,7 +69,7 @@ public class DiemDAO {
         String sql = "UPDATE DangKyHoc dk JOIN ("
                 + "SELECT dk2.MaDangKy, ROUND(SUM(tp.TrongSo * d.DiemDatDuoc), 2) AS TongDiem "
                 + "FROM DangKyHoc dk2 "
-                + "JOIN LopHoc lh ON lh.MaLop = dk2.MaLop "
+                + "JOIN LopHocPhan lh ON lh.MaLop = dk2.MaLop "
                 + "JOIN ThanhPhanDanhGia tp ON tp.MaMon = lh.MaMon AND tp.TrangThai = 1 "
                 + "LEFT JOIN DiemThanhPhan d ON d.MaDangKy = dk2.MaDangKy AND d.MaTP = tp.MaTP "
                 + "WHERE dk2.MaSV = ? AND dk2.MaLop = ? "
@@ -93,7 +93,7 @@ public class DiemDAO {
                 + "FROM DangKyHoc dk "
                 + "JOIN SinhVien sv ON sv.MaSV = dk.MaSV "
                 + "JOIN Users u ON u.UserID = sv.UserID "
-                + "JOIN LopHoc lh ON lh.MaLop = dk.MaLop "
+                + "JOIN LopHocPhan lh ON lh.MaLop = dk.MaLop "
                 + "LEFT JOIN ThanhPhanDanhGia tp ON tp.MaMon = lh.MaMon AND tp.TrangThai = 1 "
                 + "LEFT JOIN DiemThanhPhan d ON d.MaDangKy = dk.MaDangKy AND d.MaTP = tp.MaTP "
                 + "WHERE dk.MaLop = ? AND dk.TrangThai <> 'HUY' "
@@ -144,7 +144,7 @@ public class DiemDAO {
             }
         }
 
-        String termSql = "SELECT lh.HocKy FROM LopHoc lh WHERE lh.MaLop = ?";
+        String termSql = "SELECT lh.HocKy FROM LopHocPhan lh WHERE lh.MaLop = ?";
         String hocKy;
         try (PreparedStatement ps = conn.prepareStatement(termSql)) {
             ps.setString(1, maLop);
@@ -157,7 +157,7 @@ public class DiemDAO {
         if (new CauHinhHocKyDAO().layCauHinhTrongDotNhapDiem(conn, hocKy) == null) return false;
 
         String componentSql = "SELECT 1 FROM ThanhPhanDanhGia tp "
-                + "JOIN LopHoc lh ON lh.MaMon = tp.MaMon "
+                + "JOIN LopHocPhan lh ON lh.MaMon = tp.MaMon "
                 + "WHERE tp.MaTP = ? AND lh.MaLop = ? AND tp.TrangThai = 1";
         try (PreparedStatement ps = conn.prepareStatement(componentSql)) {
             ps.setInt(1, maTP);
@@ -203,7 +203,7 @@ public class DiemDAO {
     public boolean coDiemTrongMon(Connection conn, String maMon) throws SQLException {
         String sql = "SELECT 1 FROM DiemThanhPhan d "
                 + "JOIN DangKyHoc dk ON dk.MaDangKy = d.MaDangKy "
-                + "JOIN LopHoc lh ON lh.MaLop = dk.MaLop "
+                + "JOIN LopHocPhan lh ON lh.MaLop = dk.MaLop "
                 + "WHERE lh.MaMon = ? LIMIT 1";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maMon);

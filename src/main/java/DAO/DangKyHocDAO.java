@@ -38,9 +38,9 @@ public class DangKyHocDAO {
     public boolean coLopBiTrungLich(Connection conn, String maSV, String maLopMoi) throws SQLException {
         String sql = "SELECT 1 "
                 + "FROM DangKyHoc dk "
-                + "JOIN LopHoc lh ON lh.MaLop = dk.MaLop "
+                + "JOIN LopHocPhan lh ON lh.MaLop = dk.MaLop "
                 + "JOIN LichHoc lich ON lich.MaLop = lh.MaLop "
-                + "JOIN LopHoc lopMoi ON lopMoi.MaLop = ? "
+                + "JOIN LopHocPhan lopMoi ON lopMoi.MaLop = ? "
                 + "JOIN LichHoc lichMoi ON lichMoi.MaLop = lopMoi.MaLop "
                 + "WHERE dk.MaSV = ? AND dk.TrangThai <> 'HUY' "
                 + "AND lh.HocKy = lopMoi.HocKy "
@@ -74,7 +74,7 @@ public class DangKyHocDAO {
     public boolean daDangKyMonTrongHocKy(Connection conn, String maSV, String maMon, String hocKy)
             throws SQLException {
         String sql = "SELECT 1 FROM DangKyHoc dk "
-                + "JOIN LopHoc lh ON lh.MaLop = dk.MaLop "
+                + "JOIN LopHocPhan lh ON lh.MaLop = dk.MaLop "
                 + "WHERE dk.MaSV = ? AND lh.MaMon = ? AND lh.HocKy = ? "
                 + "AND dk.TrangThai = 'DANG_HOC' LIMIT 1";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -89,7 +89,7 @@ public class DangKyHocDAO {
 
     public int tongTinChiDangHoc(Connection conn, String maSV, String hocKy) throws SQLException {
         String sql = "SELECT COALESCE(SUM(mh.SoTinChi), 0) AS TongTinChi "
-                + "FROM DangKyHoc dk JOIN LopHoc lh ON lh.MaLop = dk.MaLop "
+                + "FROM DangKyHoc dk JOIN LopHocPhan lh ON lh.MaLop = dk.MaLop "
                 + "JOIN MonHoc mh ON mh.MaMon = lh.MaMon "
                 + "WHERE dk.MaSV = ? AND lh.HocKy = ? AND dk.TrangThai = 'DANG_HOC'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -152,7 +152,7 @@ public class DangKyHocDAO {
 
     public boolean kiemTraDaQuaMon(Connection conn, String maSV, String maMonHoc) throws SQLException {
         String sql = "SELECT 1 FROM DangKyHoc d " +
-                "JOIN LopHoc l ON d.MaLop = l.MaLop " +
+                "JOIN LopHocPhan l ON d.MaLop = l.MaLop " +
                 "WHERE d.MaSV = ? AND l.MaMon = ? " +
                 "AND d.DiemTongKet >= 4.0 AND d.TrangThai = 'DA_HOAN_THANH'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -190,7 +190,7 @@ public class DangKyHocDAO {
                 + "TIME_FORMAT(lich.GioBatDau, '%H:%i') AS GioBatDau, "
                 + "TIME_FORMAT(lich.GioKetThuc, '%H:%i') AS GioKetThuc, lich.PhongHoc "
                 + "FROM DangKyHoc dk "
-                + "JOIN LopHoc lh ON lh.MaLop = dk.MaLop "
+                + "JOIN LopHocPhan lh ON lh.MaLop = dk.MaLop "
                 + "JOIN MonHoc mh ON mh.MaMon = lh.MaMon "
                 + "JOIN LichHoc lich ON lich.MaLop = lh.MaLop "
                 + "WHERE dk.MaSV = ? AND dk.TrangThai <> 'HUY' "

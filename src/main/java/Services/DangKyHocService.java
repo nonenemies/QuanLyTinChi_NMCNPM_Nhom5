@@ -4,8 +4,11 @@ import java.util.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import DAO.DangKyHocDAO;
+import DAO.DotDangKyNganhDAO;
 import DAO.LopHocDAO;
 import DAO.MonTienQuyetDAO;
+import Model.ChuongTrinhDaoTao;
+import Model.DotDangKyNganh;
 import Model.MonTienQuyet;
 import Model.DangKyHoc;
 import Model.LopHocDangKy;
@@ -21,6 +24,7 @@ public class DangKyHocService {
     private final DangKyHocDAO dangKyDAO = new DangKyHocDAO();
     private final LopHocDAO lopHocDAO = new LopHocDAO();
     private final ChuongTrinhDaoTaoDAO chuongTrinhDaoTaoDAO = new ChuongTrinhDaoTaoDAO();
+    private final DotDangKyNganhDAO dotDangKyNganhDAO = new DotDangKyNganhDAO();
 
     public KetQuaDangKy dangKyHoc(String maSV, String maLop) {
         if (maSV == null || maSV.isBlank() || maLop == null || maLop.isBlank()) {
@@ -84,10 +88,13 @@ public class DangKyHocService {
         if (lopHoc == null || lopHoc.getTrangThai() != Model.TrangThaiHoatDong.HOAT_DONG) {
             return KetQuaDangKy.LOP_KHONG_HOAT_DONG;
         }
-        if (!chuongTrinhDaoTaoDAO.dangTrongDotDangKy(conn, maSV)) {
+        DotDangKyNganh dotDangKy = dotDangKyNganhDAO.layDotDangKyHienTai(conn, maSV);
+        if (dotDangKy == null) {
             return KetQuaDangKy.DOT_DANG_KY_DA_DONG;
         }
-        if (!chuongTrinhDaoTaoDAO.monThuocChuongTrinh(conn, maSV, lopHoc.getMaMon())) {
+        ChuongTrinhDaoTao chuongTrinh = chuongTrinhDaoTaoDAO.layChuongTrinhMonHoc(
+                conn, maSV, lopHoc.getMaMon());
+        if (chuongTrinh == null) {
             return KetQuaDangKy.KHONG_HOP_LE;
         }
         if (dangKyDAO.kiemTraDaDangKy(conn, maSV, maLop)

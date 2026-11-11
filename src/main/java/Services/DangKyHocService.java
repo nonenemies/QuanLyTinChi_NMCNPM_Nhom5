@@ -143,7 +143,7 @@ public class DangKyHocService {
                 }
 
                 var lopHoc = lopHocDAO.layLopTheoMa(conn, maLop);
-                if (lopHoc == null || !chuongTrinhDaoTaoDAO.dangTrongDotDangKy(conn, maSV)) {
+                if (lopHoc == null || dotDangKyNganhDAO.layDotDangKyHienTai(conn, maSV) == null) {
                     return rollbackAndReturn(conn, false);
                 }
                 TrangThaiDangKy trangThai = dangKyDAO.layTrangThaiDangKyForUpdate(conn, maSV, maLop);

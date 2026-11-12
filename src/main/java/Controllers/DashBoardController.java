@@ -177,7 +177,6 @@ public class DashBoardController {
 
         addProfileDetail("Email", valueOrDash(lecturer.getEmail()));
         addProfileDetail("Mã giảng viên", valueOrDash(lecturer.getMaGiangVien()));
-        addProfileDetail("Ngành", valueOrDash(lecturer.getNganh()));
         addProfileDetail("Chuyên ngành", valueOrDash(lecturer.getChuyenNganh()));
         addProfileDetail("Học vị", valueOrDash(lecturer.getHocVi()));
 
@@ -219,7 +218,6 @@ public class DashBoardController {
         addProfileDetail("Email", valueOrDash(admin.getEmail()));
         addProfileDetail("Tài khoản", valueOrDash(admin.getMaSo()));
         addProfileDetail("Họ tên", valueOrDash(admin.getHoTen()));
-        addProfileDetail("Ngành", valueOrDash(admin.getNganh()));
         addProfileDetail("Trạng thái", "Đang hoạt động");
 
         if (activeCourses.isEmpty()) {

@@ -13,9 +13,9 @@ public class DangKyHocDAO {
 
     /** Khóa dòng sinh viên để các đăng ký đồng thời của cùng một sinh viên được tuần tự hóa. */
     public boolean khoaSinhVienChoDangKy(Connection conn, String maSV) throws SQLException {
-        String sql = "SELECT sv.MaSV FROM SinhVien sv "
+        String sql = "SELECT sv.MaSinhVien FROM SinhVien sv "
                 + "JOIN Users u ON u.UserID = sv.UserID "
-                + "WHERE sv.MaSV = ? AND u.Role = 'SINHVIEN' AND u.TrangThai = 'HOAT_DONG' FOR UPDATE";
+                + "WHERE sv.MaSinhVien = ? AND u.VaiTro = 'SINHVIEN' AND u.TrangThai = 'HOAT_DONG' FOR UPDATE";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maSV);
             try (ResultSet rs = ps.executeQuery()) {
@@ -42,7 +42,7 @@ public class DangKyHocDAO {
                 + "JOIN LichHoc lich ON lich.MaLop = lh.MaLop "
                 + "JOIN LopHocPhan lopMoi ON lopMoi.MaLop = ? "
                 + "JOIN LichHoc lichMoi ON lichMoi.MaLop = lopMoi.MaLop "
-                + "WHERE dk.MaSV = ? AND dk.TrangThai <> 'HUY' "
+                + "WHERE dk.MaSinhVien = ? AND dk.TrangThai <> 'HUY' "
                 + "AND lh.HocKy = lopMoi.HocKy "
                 + "AND lich.Thu = lichMoi.Thu "
                 + "AND lich.GioBatDau < lichMoi.GioKetThuc "
@@ -61,7 +61,7 @@ public class DangKyHocDAO {
     // Ném SQLException, dùng Connection truyền vào
     public boolean kiemTraDaDangKy(Connection conn, String maSV, String maLop) throws SQLException {
         String sql = "SELECT 1 FROM DangKyHoc "
-                + "WHERE MaSV = ? AND MaLop = ? AND TrangThai <> 'HUY'";
+                + "WHERE MaSinhVien = ? AND MaLop = ? AND TrangThai <> 'HUY'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maSV);
             ps.setString(2, maLop);
@@ -75,7 +75,7 @@ public class DangKyHocDAO {
             throws SQLException {
         String sql = "SELECT 1 FROM DangKyHoc dk "
                 + "JOIN LopHocPhan lh ON lh.MaLop = dk.MaLop "
-                + "WHERE dk.MaSV = ? AND lh.MaMon = ? AND lh.HocKy = ? "
+                + "WHERE dk.MaSinhVien = ? AND lh.MaMon = ? AND lh.HocKy = ? "
                 + "AND dk.TrangThai = 'DANG_HOC' LIMIT 1";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maSV);
@@ -91,7 +91,7 @@ public class DangKyHocDAO {
         String sql = "SELECT COALESCE(SUM(mh.SoTinChi), 0) AS TongTinChi "
                 + "FROM DangKyHoc dk JOIN LopHocPhan lh ON lh.MaLop = dk.MaLop "
                 + "JOIN MonHoc mh ON mh.MaMon = lh.MaMon "
-                + "WHERE dk.MaSV = ? AND lh.HocKy = ? AND dk.TrangThai = 'DANG_HOC'";
+                + "WHERE dk.MaSinhVien = ? AND lh.HocKy = ? AND dk.TrangThai = 'DANG_HOC'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maSV);
             ps.setString(2, hocKy);
@@ -118,7 +118,7 @@ public class DangKyHocDAO {
     public boolean coDiem(Connection conn, String maSV, String maLop) throws SQLException {
         String sql = "SELECT 1 FROM DiemThanhPhan d "
                 + "JOIN DangKyHoc dk ON dk.MaDangKy = d.MaDangKy "
-                + "WHERE dk.MaSV = ? AND dk.MaLop = ? LIMIT 1";
+                + "WHERE dk.MaSinhVien = ? AND dk.MaLop = ? LIMIT 1";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maSV);
             ps.setString(2, maLop);
@@ -130,7 +130,7 @@ public class DangKyHocDAO {
 
     public TrangThaiDangKy layTrangThaiDangKyForUpdate(Connection conn, String maSV, String maLop)
             throws SQLException {
-        String sql = "SELECT TrangThai FROM DangKyHoc WHERE MaSV = ? AND MaLop = ? FOR UPDATE";
+        String sql = "SELECT TrangThai FROM DangKyHoc WHERE MaSinhVien = ? AND MaLop = ? FOR UPDATE";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maSV);
             ps.setString(2, maLop);
@@ -142,7 +142,7 @@ public class DangKyHocDAO {
 
     public boolean huyDangKy(Connection conn, String maSV, String maLop) throws SQLException {
         String sql = "UPDATE DangKyHoc SET TrangThai = 'HUY' "
-                + "WHERE MaSV = ? AND MaLop = ? AND TrangThai = 'DANG_HOC'";
+                + "WHERE MaSinhVien = ? AND MaLop = ? AND TrangThai = 'DANG_HOC'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maSV);
             ps.setString(2, maLop);
@@ -153,7 +153,7 @@ public class DangKyHocDAO {
     public boolean kiemTraDaQuaMon(Connection conn, String maSV, String maMonHoc) throws SQLException {
         String sql = "SELECT 1 FROM DangKyHoc d " +
                 "JOIN LopHocPhan l ON d.MaLop = l.MaLop " +
-                "WHERE d.MaSV = ? AND l.MaMon = ? " +
+                "WHERE d.MaSinhVien = ? AND l.MaMon = ? " +
                 "AND d.DiemTongKet >= 4.0 AND d.TrangThai = 'DA_HOAN_THANH'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maSV);
@@ -166,7 +166,7 @@ public class DangKyHocDAO {
 
     public boolean themDangKyMoi(Connection conn, DangKyHoc dk) throws SQLException {
         String reactivateSql = "UPDATE DangKyHoc SET TrangThai = 'DANG_HOC' "
-                + "WHERE MaSV = ? AND MaLop = ? AND TrangThai = 'HUY' "
+                + "WHERE MaSinhVien = ? AND MaLop = ? AND TrangThai = 'HUY' "
                 + "AND NOT EXISTS (SELECT 1 FROM DiemThanhPhan d WHERE d.MaDangKy = DangKyHoc.MaDangKy)";
         try (PreparedStatement ps = conn.prepareStatement(reactivateSql)) {
             ps.setString(1, dk.getMaSV());
@@ -176,7 +176,7 @@ public class DangKyHocDAO {
             }
         }
 
-        String sql = "INSERT INTO DangKyHoc (MaLop, MaSV) VALUES (?, ?)";
+        String sql = "INSERT INTO DangKyHoc (MaLop, MaSinhVien) VALUES (?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, dk.getMaLop());
             ps.setString(2, dk.getMaSV());
@@ -193,7 +193,7 @@ public class DangKyHocDAO {
                 + "JOIN LopHocPhan lh ON lh.MaLop = dk.MaLop "
                 + "JOIN MonHoc mh ON mh.MaMon = lh.MaMon "
                 + "JOIN LichHoc lich ON lich.MaLop = lh.MaLop "
-                + "WHERE dk.MaSV = ? AND dk.TrangThai <> 'HUY' "
+                + "WHERE dk.MaSinhVien = ? AND dk.TrangThai <> 'HUY' "
                 + "ORDER BY lich.Thu, lich.GioBatDau, lich.GioKetThuc, mh.TenMon";
         try (Connection conn = Util.DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

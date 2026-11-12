@@ -20,8 +20,8 @@ public class DiemDAO {
         String sql = "SELECT lh.MaLop, mh.MaMon, mh.TenMon, lh.HocKy, mh.SoTinChi, "
                 + "dk.DiemTongKet, dk.TrangThai, "
                 + "COALESCE((SELECT GROUP_CONCAT(CONCAT(tp.TenThanhPhan, ': ', d.DiemDatDuoc) "
-                + "ORDER BY tp.ThuTu, tp.MaTP SEPARATOR ' | ') "
-                + "FROM DiemThanhPhan d JOIN ThanhPhanDanhGia tp ON tp.MaTP = d.MaTP "
+                + "ORDER BY tp.ThuTu, tp.MaThanhPhan SEPARATOR ' | ') "
+                + "FROM DiemThanhPhan d JOIN ThanhPhanDanhGia tp ON tp.MaThanhPhan = d.MaThanhPhan "
                 + "WHERE d.MaDangKy = dk.MaDangKy), '') AS DiemThanhPhan, "
                 + "COALESCE(lich.LichHoc, 'Chưa xếp lịch') AS LichHoc, "
                 + "CASE WHEN lich.MaLop IS NULL THEN 0 ELSE 1 END AS CoLichHoc "
@@ -35,7 +35,7 @@ public class DiemDAO {
                 + "ORDER BY Thu, GioBatDau SEPARATOR ' | ') AS LichHoc "
                 + "FROM LichHoc GROUP BY MaLop"
                 + ") lich ON lich.MaLop = lh.MaLop "
-                + "WHERE dk.MaSV = ? AND dk.TrangThai <> 'HUY' "
+                + "WHERE dk.MaSinhVien = ? AND dk.TrangThai <> 'HUY' "
                 + "ORDER BY lh.HocKy, lh.MaLop, mh.MaMon";
         List<LopHocDangKy> results = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -71,10 +71,11 @@ public class DiemDAO {
                 + "FROM DangKyHoc dk2 "
                 + "JOIN LopHocPhan lh ON lh.MaLop = dk2.MaLop "
                 + "JOIN ThanhPhanDanhGia tp ON tp.MaMon = lh.MaMon AND tp.TrangThai = 1 "
-                + "LEFT JOIN DiemThanhPhan d ON d.MaDangKy = dk2.MaDangKy AND d.MaTP = tp.MaTP "
-                + "WHERE dk2.MaSV = ? AND dk2.MaLop = ? "
+                + "LEFT JOIN DiemThanhPhan d ON d.MaDangKy = dk2.MaDangKy "
+                + "AND d.MaThanhPhan = tp.MaThanhPhan "
+                + "WHERE dk2.MaSinhVien = ? AND dk2.MaLop = ? "
                 + "GROUP BY dk2.MaDangKy "
-                + "HAVING COUNT(*) = COUNT(DISTINCT tp.MaTP) "
+                + "HAVING COUNT(*) = COUNT(DISTINCT tp.MaThanhPhan) "
                 + "AND COUNT(d.DiemDatDuoc) = COUNT(*)"
                 + ") ketQua ON ketQua.MaDangKy = dk.MaDangKy "
                 + "SET dk.DiemTongKet = ketQua.TongDiem, "
@@ -88,16 +89,17 @@ public class DiemDAO {
 
     /** Tải danh sách sinh viên và điểm của các thành phần đang hoạt động trong lớp. */
     public List<BangDiemSinhVien> layBangDiemTheoLop(Connection conn, String maLop) throws SQLException {
-        String sql = "SELECT dk.MaDangKy, dk.MaSV, u.HoTen, dk.DiemTongKet, dk.TrangThai, "
-                + "tp.MaTP, d.DiemDatDuoc "
+        String sql = "SELECT dk.MaDangKy, dk.MaSinhVien, u.HoTen, dk.DiemTongKet, dk.TrangThai, "
+                + "tp.MaThanhPhan, d.DiemDatDuoc "
                 + "FROM DangKyHoc dk "
-                + "JOIN SinhVien sv ON sv.MaSV = dk.MaSV "
+                + "JOIN SinhVien sv ON sv.MaSinhVien = dk.MaSinhVien "
                 + "JOIN Users u ON u.UserID = sv.UserID "
                 + "JOIN LopHocPhan lh ON lh.MaLop = dk.MaLop "
                 + "LEFT JOIN ThanhPhanDanhGia tp ON tp.MaMon = lh.MaMon AND tp.TrangThai = 1 "
-                + "LEFT JOIN DiemThanhPhan d ON d.MaDangKy = dk.MaDangKy AND d.MaTP = tp.MaTP "
+                + "LEFT JOIN DiemThanhPhan d ON d.MaDangKy = dk.MaDangKy "
+                + "AND d.MaThanhPhan = tp.MaThanhPhan "
                 + "WHERE dk.MaLop = ? AND dk.TrangThai <> 'HUY' "
-                + "ORDER BY u.HoTen, dk.MaSV, tp.ThuTu, tp.MaTP";
+                + "ORDER BY u.HoTen, dk.MaSinhVien, tp.ThuTu, tp.MaThanhPhan";
         Map<Integer, BangDiemSinhVien> rows = new LinkedHashMap<>();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maLop);
@@ -107,12 +109,12 @@ public class DiemDAO {
                     BangDiemSinhVien row = rows.get(maDangKy);
                     if (row == null) {
                         java.math.BigDecimal total = rs.getBigDecimal("DiemTongKet");
-                        row = new BangDiemSinhVien(maDangKy, rs.getString("MaSV"),
+                        row = new BangDiemSinhVien(maDangKy, rs.getString("MaSinhVien"),
                                 rs.getString("HoTen"), total == null ? null : total.floatValue(),
                                 TrangThaiDangKy.valueOf(rs.getString("TrangThai")));
                         rows.put(maDangKy, row);
                     }
-                    int maTP = rs.getInt("MaTP");
+                    int maTP = rs.getInt("MaThanhPhan");
                     if (!rs.wasNull()) {
                         java.math.BigDecimal score = rs.getBigDecimal("DiemDatDuoc");
                         row.setDiemThanhPhan(maTP, score == null ? null : score.floatValue());
@@ -128,7 +130,7 @@ public class DiemDAO {
                             int maTP, float diemDatDuoc) throws SQLException {
         int maDangKy;
         String registrationSql = "SELECT MaDangKy FROM DangKyHoc "
-                + "WHERE MaSV = ? AND MaLop = ? "
+                + "WHERE MaSinhVien = ? AND MaLop = ? "
                 + "AND TrangThai IN ('DANG_HOC', 'DA_HOAN_THANH', 'KHONG_DAT') FOR UPDATE";
         try (PreparedStatement ps = conn.prepareStatement(registrationSql)) {
             ps.setString(1, maSV);
@@ -158,7 +160,7 @@ public class DiemDAO {
 
         String componentSql = "SELECT 1 FROM ThanhPhanDanhGia tp "
                 + "JOIN LopHocPhan lh ON lh.MaMon = tp.MaMon "
-                + "WHERE tp.MaTP = ? AND lh.MaLop = ? AND tp.TrangThai = 1";
+                + "WHERE tp.MaThanhPhan = ? AND lh.MaLop = ? AND tp.TrangThai = 1";
         try (PreparedStatement ps = conn.prepareStatement(componentSql)) {
             ps.setInt(1, maTP);
             ps.setString(2, maLop);
@@ -170,22 +172,22 @@ public class DiemDAO {
         }
 
         int maDiem;
-        String existingSql = "SELECT MaDiemTP FROM DiemThanhPhan "
-                + "WHERE MaDangKy = ? AND MaTP = ? FOR UPDATE";
+        String existingSql = "SELECT MaDiemThanhPhan FROM DiemThanhPhan "
+                + "WHERE MaDangKy = ? AND MaThanhPhan = ? FOR UPDATE";
         try (PreparedStatement ps = conn.prepareStatement(existingSql)) {
             ps.setInt(1, maDangKy);
             ps.setInt(2, maTP);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) {
                     try (PreparedStatement insert = conn.prepareStatement(
-                            "INSERT INTO DiemThanhPhan (MaDangKy, MaTP, DiemDatDuoc) VALUES (?, ?, ?)")) {
+                            "INSERT INTO DiemThanhPhan (MaDangKy, MaThanhPhan, DiemDatDuoc) VALUES (?, ?, ?)")) {
                         insert.setInt(1, maDangKy);
                         insert.setInt(2, maTP);
                         insert.setFloat(3, diemDatDuoc);
                         return insert.executeUpdate() == 1;
                     }
                 }
-                maDiem = rs.getInt("MaDiemTP");
+                maDiem = rs.getInt("MaDiemThanhPhan");
                 if (rs.next()) {
                     throw new SQLException("Duplicate scores exist for the same registration and component.");
                 }
@@ -193,7 +195,7 @@ public class DiemDAO {
         }
         try (PreparedStatement update = conn.prepareStatement(
                 "UPDATE DiemThanhPhan SET DiemDatDuoc = ?, NgayNhap = CURRENT_TIMESTAMP "
-                        + "WHERE MaDiemTP = ?")) {
+                        + "WHERE MaDiemThanhPhan = ?")) {
             update.setFloat(1, diemDatDuoc);
             update.setInt(2, maDiem);
             return update.executeUpdate() == 1;
@@ -214,8 +216,8 @@ public class DiemDAO {
     }
 
     public boolean giangVienConHoatDong(Connection conn, String maGV) throws SQLException {
-        String sql = "SELECT 1 FROM GiaoVien gv JOIN Users u ON u.UserID = gv.UserID "
-                + "WHERE gv.MaGV = ? AND u.Role = 'GIAOVIEN' AND u.TrangThai = 'HOAT_DONG'";
+        String sql = "SELECT 1 FROM GiangVien gv JOIN Users u ON u.UserID = gv.UserID "
+                + "WHERE gv.MaGiangVien = ? AND u.VaiTro = 'GIAOVIEN' AND u.TrangThai = 'HOAT_DONG'";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maGV);
             try (ResultSet rs = ps.executeQuery()) {

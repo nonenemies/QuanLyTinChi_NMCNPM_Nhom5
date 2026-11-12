@@ -13,9 +13,9 @@ import java.util.Objects;
 
 /** Truy vấn hồ sơ chuyên môn bổ sung của tài khoản giảng viên. */
 public class GiangVienDAO {
-    private static final String SELECT = "SELECT u.UserID, u.HoTen, u.Email, u.PasswordHash, u.Role, "
-            + "u.MaSo, u.Nganh, u.NgayTao, u.TrangThai, gv.MaGV, gv.ChuyenNganh, gv.HocVi "
-            + "FROM GiaoVien gv JOIN Users u ON u.UserID = gv.UserID ";
+    private static final String SELECT = "SELECT u.UserID, u.HoTen, u.Email, u.Password, u.VaiTro, "
+            + "u.MaSo, u.NgayTao, u.TrangThai, gv.MaGiangVien, gv.ChuyenNganh, gv.HocVi "
+            + "FROM GiangVien gv JOIN Users u ON u.UserID = gv.UserID ";
 
     public GiangVien layTheoMaGV(String maGV) throws SQLException {
         try (Connection conn = DBConnection.getConnection()) {
@@ -24,7 +24,7 @@ public class GiangVienDAO {
     }
 
     public GiangVien layTheoMaGV(Connection conn, String maGV) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement(SELECT + "WHERE gv.MaGV = ?")) {
+        try (PreparedStatement ps = conn.prepareStatement(SELECT + "WHERE gv.MaGiangVien = ?")) {
             ps.setString(1, maGV);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? docGiangVien(rs) : null;
@@ -45,7 +45,7 @@ public class GiangVienDAO {
     public List<GiangVien> layTatCa() throws SQLException {
         List<GiangVien> lecturers = new ArrayList<>();
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(SELECT + "ORDER BY gv.MaGV");
+             PreparedStatement ps = conn.prepareStatement(SELECT + "ORDER BY gv.MaGiangVien");
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) lecturers.add(docGiangVien(rs));
         }
@@ -54,7 +54,7 @@ public class GiangVienDAO {
 
     public boolean them(Connection conn, GiangVien giangVien) throws SQLException {
         Objects.requireNonNull(giangVien, "giangVien không được null");
-        String sql = "INSERT INTO GiaoVien (UserID, MaGV, ChuyenNganh, HocVi) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO GiangVien (UserID, MaGiangVien, ChuyenNganh, HocVi) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, giangVien.getUserID());
             ps.setString(2, giangVien.getMaGiangVien());
@@ -66,7 +66,7 @@ public class GiangVienDAO {
 
     public boolean capNhat(Connection conn, GiangVien giangVien) throws SQLException {
         Objects.requireNonNull(giangVien, "giangVien không được null");
-        String sql = "UPDATE GiaoVien SET MaGV = ?, ChuyenNganh = ?, HocVi = ? WHERE UserID = ?";
+        String sql = "UPDATE GiangVien SET MaGiangVien = ?, ChuyenNganh = ?, HocVi = ? WHERE UserID = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, giangVien.getMaGiangVien());
             ps.setString(2, giangVien.getChuyenNganh());
@@ -77,7 +77,7 @@ public class GiangVienDAO {
     }
 
     public boolean xoa(Connection conn, int userID) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM GiaoVien WHERE UserID = ?")) {
+        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM GiangVien WHERE UserID = ?")) {
             ps.setInt(1, userID);
             return ps.executeUpdate() == 1;
         }
@@ -85,9 +85,9 @@ public class GiangVienDAO {
 
     private GiangVien docGiangVien(ResultSet rs) throws SQLException {
         return new GiangVien(rs.getInt("UserID"), rs.getString("HoTen"), rs.getString("Email"),
-                rs.getString("PasswordHash"), rs.getString("Role"), rs.getString("MaSo"),
-                rs.getString("Nganh"), rs.getTimestamp("NgayTao"),
+                rs.getString("Password"), rs.getString("VaiTro"), rs.getString("MaSo"),
+                rs.getTimestamp("NgayTao"),
                 Model.TrangThaiHoatDong.valueOf(rs.getString("TrangThai")),
-                rs.getString("MaGV"), rs.getString("ChuyenNganh"), rs.getString("HocVi"));
+                rs.getString("MaGiangVien"), rs.getString("ChuyenNganh"), rs.getString("HocVi"));
     }
 }

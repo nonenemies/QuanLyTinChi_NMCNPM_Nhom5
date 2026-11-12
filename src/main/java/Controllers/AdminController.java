@@ -11,6 +11,7 @@ import Services.ServiceException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -272,7 +273,9 @@ public class AdminController {
         colUserName.setCellValueFactory(new PropertyValueFactory<>("hoTen"));
         colUserEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colUserRole.setCellValueFactory(new PropertyValueFactory<>("role"));
-        colUserMajor.setCellValueFactory(new PropertyValueFactory<>("nganh"));
+        colUserMajor.setCellValueFactory(cell -> new ReadOnlyStringWrapper(
+                cell.getValue() instanceof SinhVien student && student.getNganh() != null
+                        ? student.getNganh() : ""));
         colUserStatus.setCellValueFactory(new PropertyValueFactory<>("trangThai"));
     }
 
@@ -313,8 +316,12 @@ public class AdminController {
         String role = cmbAccountRole.getValue();
         filteredAccounts.setPredicate(account -> (role == null || role.equalsIgnoreCase(account.getRole()))
                 && (account.getMaSo() + " " + account.getHoTen() + " "
-                + account.getEmail() + " " + account.getRole() + " " + account.getNganh())
+                + account.getEmail() + " " + account.getRole() + " " + accountNganh(account))
                 .toLowerCase(Locale.ROOT).contains(query));
+    }
+
+    private String accountNganh(Users account) {
+        return account instanceof SinhVien student ? optional(student.getNganh()) : "";
     }
 
     private void filterCourses() {
@@ -334,7 +341,8 @@ public class AdminController {
         txtUserEmail.setText(selected.getEmail());
         txtUserPassword.clear();
         txtUserPassword.setPromptText("Để trống để giữ mật khẩu");
-        txtUserMajor.setText(selected.getNganh());
+        txtUserMajor.setText(selected instanceof SinhVien student
+                ? optional(student.getNganh()) : "");
         cmbUserStatus.setValue(selected.getTrangThai());
         if (selected instanceof SinhVien student) {
             txtStudentClass.setText(student.getLop());
@@ -378,7 +386,7 @@ public class AdminController {
         }
         if (LECTURER_ROLE.equals(role)) {
             return new GiangVien(selectedAccount == null ? null : selectedAccount.getUserID(),
-                    name, email, password, LECTURER_ROLE, code, major, null, status,
+                    name, email, password, LECTURER_ROLE, code, null, status,
                     code, optional(txtLecturerSpecialty.getText()), optional(txtLecturerDegree.getText()));
         }
         throw new IllegalArgumentException("Vai trò tài khoản không hợp lệ.");

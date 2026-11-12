@@ -18,12 +18,12 @@ import java.util.Objects;
 
 /** Truy vấn tài khoản và thông tin vai trò được lưu trực tiếp trong bảng Users. */
 public class UsersDAO {
-    private static final String USER_SELECT = "SELECT u.UserID, u.HoTen, u.Email, u.PasswordHash, "
-            + "u.Role, u.MaSo, u.Nganh, u.NgayTao, u.TrangThai, "
-            + "sv.MaSV, sv.NgaySinh, sv.GioiTinh, sv.Lop, sv.KhoaHoc, sv.HeDaoTao, "
-            + "gv.MaGV, gv.ChuyenNganh, gv.HocVi, ad.ChucVu "
+    private static final String USER_SELECT = "SELECT u.UserID, u.HoTen, u.Email, u.Password, "
+            + "u.VaiTro, u.MaSo, u.NgayTao, u.TrangThai, "
+            + "sv.MaSinhVien, sv.Nganh, sv.NgaySinh, sv.GioiTinh, sv.Lop, sv.KhoaHoc, sv.HeDaoTao, "
+            + "gv.MaGiangVien, gv.ChuyenNganh, gv.HocVi, ad.ChucVu "
             + "FROM Users u LEFT JOIN SinhVien sv ON sv.UserID = u.UserID "
-            + "LEFT JOIN GiaoVien gv ON gv.UserID = u.UserID "
+            + "LEFT JOIN GiangVien gv ON gv.UserID = u.UserID "
             + "LEFT JOIN Admin ad ON ad.UserID = u.UserID ";
 
     public Users layTheoID(int userID) throws SQLException {
@@ -66,16 +66,15 @@ public class UsersDAO {
     /** Chỉ tạo hàng tài khoản; tạo hàng trong bảng vai trò cùng transaction của Service. */
     public int them(Connection conn, Users user) throws SQLException {
         Objects.requireNonNull(user, "user không được null");
-        String sql = "INSERT INTO Users (HoTen, Email, PasswordHash, Role, MaSo, Nganh, TrangThai) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Users (HoTen, Email, Password, VaiTro, MaSo, TrangThai) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getHoTen());
             ps.setString(2, user.getEmail());
             ps.setString(3, user.getPasswordHash());
             ps.setString(4, user.getRole());
             ps.setString(5, user.getMaSo());
-            ps.setString(6, user.getNganh());
-            ps.setString(7, user.getTrangThai().name());
+            ps.setString(6, user.getTrangThai().name());
             if (ps.executeUpdate() != 1) throw new SQLException("Không tạo được tài khoản.");
             try (ResultSet keys = ps.getGeneratedKeys()) {
                 if (!keys.next()) throw new SQLException("Không lấy được UserID vừa tạo.");
@@ -84,18 +83,17 @@ public class UsersDAO {
         }
     }
 
-    /** Cập nhật thông tin chung; Role và MaSo được quản lý đồng bộ với bảng hồ sơ vai trò. */
+    /** Cập nhật thông tin chung; VaiTro và MaSo được quản lý đồng bộ với bảng hồ sơ vai trò. */
     public boolean capNhat(Connection conn, Users user) throws SQLException {
         Objects.requireNonNull(user, "user không được null");
-        String sql = "UPDATE Users SET HoTen = ?, Email = ?, PasswordHash = ?, "
-                + "Nganh = ?, TrangThai = ? WHERE UserID = ?";
+        String sql = "UPDATE Users SET HoTen = ?, Email = ?, Password = ?, "
+                + "TrangThai = ? WHERE UserID = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, user.getHoTen());
             ps.setString(2, user.getEmail());
             ps.setString(3, user.getPasswordHash());
-            ps.setString(4, user.getNganh());
-            ps.setString(5, user.getTrangThai().name());
-            ps.setInt(6, user.getUserID());
+            ps.setString(4, user.getTrangThai().name());
+            ps.setInt(5, user.getUserID());
             return ps.executeUpdate() == 1;
         }
     }
@@ -113,21 +111,21 @@ public class UsersDAO {
         int userID = rs.getInt("UserID");
         String hoTen = rs.getString("HoTen");
         String email = rs.getString("Email");
-        String password = rs.getString("PasswordHash");
-        String role = rs.getString("Role");
+        String password = rs.getString("Password");
+        String role = rs.getString("VaiTro");
         String maSo = rs.getString("MaSo");
-        String nganh = rs.getString("Nganh");
         java.util.Date ngayTao = rs.getTimestamp("NgayTao");
         TrangThaiHoatDong trangThai = TrangThaiHoatDong.valueOf(rs.getString("TrangThai"));
         boolean gioiTinhValue = rs.getBoolean("GioiTinh");
         Boolean gioiTinh = rs.wasNull() ? null : gioiTinhValue;
         return switch (role.toUpperCase(java.util.Locale.ROOT)) {
-            case "SINHVIEN" -> new SinhVien(userID, hoTen, email, password, role, maSo, nganh, ngayTao,
-                    trangThai, rs.getString("MaSV"), rs.getDate("NgaySinh"), gioiTinh, rs.getString("Lop"),
+            case "SINHVIEN" -> new SinhVien(userID, hoTen, email, password, role, maSo,
+                    rs.getString("Nganh"), ngayTao,
+                    trangThai, rs.getString("MaSinhVien"), rs.getDate("NgaySinh"), gioiTinh, rs.getString("Lop"),
                     rs.getObject("KhoaHoc", Integer.class), rs.getString("HeDaoTao"));
-            case "GIAOVIEN" -> new GiangVien(userID, hoTen, email, password, role, maSo, nganh, ngayTao,
-                    trangThai, rs.getString("MaGV"), rs.getString("ChuyenNganh"), rs.getString("HocVi"));
-            case "ADMIN" -> new Admin(userID, hoTen, email, password, role, maSo, nganh, ngayTao,
+            case "GIAOVIEN" -> new GiangVien(userID, hoTen, email, password, role, maSo, ngayTao,
+                    trangThai, rs.getString("MaGiangVien"), rs.getString("ChuyenNganh"), rs.getString("HocVi"));
+            case "ADMIN" -> new Admin(userID, hoTen, email, password, role, maSo, ngayTao,
                     trangThai, rs.getString("ChucVu"));
             default -> throw new SQLException("Vai trò tài khoản không được hỗ trợ: " + role);
         };

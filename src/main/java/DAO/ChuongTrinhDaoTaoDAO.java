@@ -11,9 +11,9 @@ public class ChuongTrinhDaoTaoDAO {
             Connection conn, String maSV, String maMon) throws SQLException {
         String sql = "SELECT ct.Nganh, ct.MaMon FROM SinhVien sv "
                 + "JOIN Users u ON u.UserID = sv.UserID "
-                + "JOIN ChuongTrinhDaoTao ct ON ct.Nganh = u.Nganh "
+                + "JOIN ChuongTrinhDaoTao ct ON ct.Nganh = sv.Nganh "
                 + "JOIN MonHoc mh ON mh.MaMon = ct.MaMon AND mh.TrangThai = 'HOAT_DONG' "
-                + "WHERE sv.MaSV = ? AND ct.MaMon = ?";
+                + "WHERE sv.MaSinhVien = ? AND ct.MaMon = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maSV);
             ps.setString(2, maMon);

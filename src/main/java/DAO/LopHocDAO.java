@@ -17,8 +17,8 @@ public class LopHocDAO {
 
     /** Lấy các lớp được phân công cho một giảng viên, gồm cả lớp đã kết thúc. */
     public List<LopHocPhan> layDanhSachLopCuaGiangVien(String maGV) throws SQLException {
-        String sql = "SELECT MaLop, MaMon, MaGV, HocKy, SiSoToiDa, SiSoHienTai, TrangThai "
-                + "FROM LopHocPhan WHERE MaGV = ? ORDER BY HocKy DESC, MaLop";
+        String sql = "SELECT MaLop, MaMon, MaGiangVien, HocKy, SiSoToiDa, SiSoHienTai, TrangThai "
+                + "FROM LopHocPhan WHERE MaGiangVien = ? ORDER BY HocKy DESC, MaLop";
         return truyVanDanhSach(sql, maGV);
     }
 
@@ -35,7 +35,7 @@ public class LopHocDAO {
     private List<LopHocDangKy> layDanhSachLopDangKy(String maSV, boolean chiLopDaDangKy)
             throws SQLException {
         String sql = "SELECT lh.MaLop, mh.MaMon, mh.TenMon, "
-                + "COALESCE(u.HoTen, lh.MaGV, 'Chưa phân công') AS GiangVien, "
+                + "COALESCE(u.HoTen, lh.MaGiangVien, 'Chưa phân công') AS GiangVien, "
                 + "lh.HocKy, COALESCE(lich.LichHoc, 'Chưa xếp lịch') AS LichHoc, "
                 + "CASE WHEN lich.LichHoc IS NULL THEN 0 ELSE 1 END AS CoLichHoc, "
                 + "mh.SoTinChi, lh.SiSoHienTai, lh.SiSoToiDa, "
@@ -43,7 +43,7 @@ public class LopHocDAO {
                 + "dk.TrangThai AS TrangThaiDangKy "
                 + "FROM LopHocPhan lh "
                 + "JOIN MonHoc mh ON mh.MaMon = lh.MaMon "
-                + "LEFT JOIN GiaoVien gv ON gv.MaGV = lh.MaGV "
+                + "LEFT JOIN GiangVien gv ON gv.MaGiangVien = lh.MaGiangVien "
                 + "LEFT JOIN Users u ON u.UserID = gv.UserID "
                 + "LEFT JOIN ("
                 + "SELECT MaLop, GROUP_CONCAT(CONCAT('Thứ ', Thu, ' ', "
@@ -52,16 +52,16 @@ public class LopHocDAO {
                 + "ORDER BY Thu, GioBatDau SEPARATOR ' | ') AS LichHoc "
                 + "FROM LichHoc GROUP BY MaLop"
                 + ") lich ON lich.MaLop = lh.MaLop "
-                + "LEFT JOIN DangKyHoc dk ON dk.MaLop = lh.MaLop AND dk.MaSV = ? "
+                + "LEFT JOIN DangKyHoc dk ON dk.MaLop = lh.MaLop AND dk.MaSinhVien = ? "
                 + "AND dk.TrangThai <> 'HUY' "
                 + (chiLopDaDangKy
                 ? "WHERE dk.MaDangKy IS NOT NULL "
                 : "WHERE (lh.TrangThai = 'HOAT_DONG' AND mh.TrangThai = 'HOAT_DONG' "
                 + "AND EXISTS (SELECT 1 FROM SinhVien sv "
                 + "JOIN Users u ON u.UserID = sv.UserID "
-                + "JOIN DotDangKyNganh dot ON dot.Nganh = u.Nganh "
-                + "JOIN ChuongTrinhDaoTao ct ON ct.Nganh = u.Nganh AND ct.MaMon = lh.MaMon "
-                + "WHERE sv.MaSV = ? AND CURRENT_TIMESTAMP BETWEEN dot.MoDangKy AND dot.DongDangKy "
+                + "JOIN DotDangKyNganh dot ON dot.Nganh = sv.Nganh "
+                + "JOIN ChuongTrinhDaoTao ct ON ct.Nganh = sv.Nganh AND ct.MaMon = lh.MaMon "
+                + "WHERE sv.MaSinhVien = ? AND CURRENT_TIMESTAMP BETWEEN dot.MoDangKy AND dot.DongDangKy "
                 + ")) OR dk.MaDangKy IS NOT NULL ")
                 + "ORDER BY lh.HocKy DESC, mh.MaMon, lh.MaLop";
 
@@ -94,7 +94,7 @@ public class LopHocDAO {
 
     /** Tìm lớp theo mã trên connection do bên gọi quản lý, để đọc trong cùng transaction. */
     public LopHocPhan layLopTheoMa(Connection conn, String maLop) throws SQLException {
-        String sql = "SELECT MaLop, MaMon, MaGV, HocKy, SiSoToiDa, SiSoHienTai, TrangThai "
+        String sql = "SELECT MaLop, MaMon, MaGiangVien, HocKy, SiSoToiDa, SiSoHienTai, TrangThai "
                 + "FROM LopHocPhan WHERE MaLop = ?";
         List<LopHocPhan> ketQua = truyVanDanhSach(conn, sql, maLop);
         return ketQua.isEmpty() ? null : ketQua.get(0);
@@ -102,7 +102,7 @@ public class LopHocDAO {
 
     /** Khóa lớp khi đăng ký để các lượt đăng ký cùng lớp được xử lý tuần tự. */
     public LopHocPhan layLopTheoMaForUpdate(Connection conn, String maLop) throws SQLException {
-        String sql = "SELECT MaLop, MaMon, MaGV, HocKy, SiSoToiDa, SiSoHienTai, TrangThai "
+        String sql = "SELECT MaLop, MaMon, MaGiangVien, HocKy, SiSoToiDa, SiSoHienTai, TrangThai "
                 + "FROM LopHocPhan WHERE MaLop = ? FOR UPDATE";
         List<LopHocPhan> ketQua = truyVanDanhSach(conn, sql, maLop);
         return ketQua.isEmpty() ? null : ketQua.get(0);
@@ -147,7 +147,7 @@ public class LopHocDAO {
                     danhSach.add(new LopHocPhan(
                             rs.getString("MaLop"),
                             rs.getString("MaMon"),
-                            rs.getString("MaGV"),
+                            rs.getString("MaGiangVien"),
                             rs.getString("HocKy"),
                             rs.getObject("SiSoToiDa", Integer.class),
                             rs.getObject("SiSoHienTai", Integer.class),

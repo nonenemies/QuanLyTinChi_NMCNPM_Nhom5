@@ -10,17 +10,17 @@ CREATE TABLE Users (
     UserID INT AUTO_INCREMENT PRIMARY KEY,
     HoTen VARCHAR(100) NOT NULL,
     Email VARCHAR(100) UNIQUE NOT NULL,
-    PasswordHash VARCHAR(255) NOT NULL,
-    Role VARCHAR(20) NOT NULL,
+    Password VARCHAR(255) NOT NULL,
+    VaiTro VARCHAR(20) NOT NULL,
     MaSo VARCHAR(20) UNIQUE,
-    Nganh VARCHAR(100) NULL,
     NgayTao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     TrangThai ENUM('HOAT_DONG', 'NGUNG_HOAT_DONG') NOT NULL DEFAULT 'HOAT_DONG'
 ) ENGINE=InnoDB;
 
 CREATE TABLE SinhVien (
     UserID INT PRIMARY KEY,
-    MaSV VARCHAR(20) UNIQUE NOT NULL,
+    MaSinhVien VARCHAR(20) UNIQUE NOT NULL,
+    Nganh VARCHAR(100) NULL,
     NgaySinh DATE NULL,
     GioiTinh TINYINT(1) NULL,
     Lop VARCHAR(50) NULL,
@@ -29,9 +29,9 @@ CREATE TABLE SinhVien (
     CONSTRAINT fk_sinhvien_user FOREIGN KEY (UserID) REFERENCES Users(UserID)
 ) ENGINE=InnoDB;
 
-CREATE TABLE GiaoVien (
+CREATE TABLE GiangVien (
     UserID INT PRIMARY KEY,
-    MaGV VARCHAR(20) UNIQUE NOT NULL,
+    MaGiangVien VARCHAR(20) UNIQUE NOT NULL,
     ChuyenNganh VARCHAR(100) NULL,
     HocVi VARCHAR(50) NULL,
     CONSTRAINT fk_giaovien_user FOREIGN KEY (UserID) REFERENCES Users(UserID)
@@ -65,13 +65,13 @@ CREATE TABLE MonTienQuyet (
 CREATE TABLE LopHocPhan (
     MaLop VARCHAR(20) PRIMARY KEY,
     MaMon VARCHAR(20) NOT NULL,
-    MaGV VARCHAR(20) NULL,
+    MaGiangVien VARCHAR(20) NULL,
     HocKy VARCHAR(20) NOT NULL,
     SiSoToiDa INT NOT NULL,
     SiSoHienTai INT NOT NULL DEFAULT 0,
     TrangThai ENUM('HOAT_DONG', 'NGUNG_HOAT_DONG') NOT NULL DEFAULT 'HOAT_DONG',
     CONSTRAINT fk_lophocphan_mon FOREIGN KEY (MaMon) REFERENCES MonHoc(MaMon),
-    CONSTRAINT fk_lophocphan_giaovien FOREIGN KEY (MaGV) REFERENCES GiaoVien(MaGV),
+    CONSTRAINT fk_lophocphan_giangvien FOREIGN KEY (MaGiangVien) REFERENCES GiangVien(MaGiangVien),
     CONSTRAINT chk_lophocphan_siso CHECK (
         SiSoToiDa > 0 AND SiSoHienTai >= 0 AND SiSoHienTai <= SiSoToiDa
     )
@@ -113,7 +113,7 @@ CREATE TABLE LichHoc (
 ) ENGINE=InnoDB;
 
 CREATE TABLE ThanhPhanDanhGia (
-    MaTP INT AUTO_INCREMENT PRIMARY KEY,
+    MaThanhPhan INT AUTO_INCREMENT PRIMARY KEY,
     MaMon VARCHAR(20) NOT NULL,
     TenThanhPhan VARCHAR(200) NOT NULL,
     TrongSo DECIMAL(5,2) NOT NULL,
@@ -127,42 +127,42 @@ CREATE TABLE ThanhPhanDanhGia (
 CREATE TABLE DangKyHoc (
     MaDangKy INT AUTO_INCREMENT PRIMARY KEY,
     MaLop VARCHAR(20) NOT NULL,
-    MaSV VARCHAR(20) NOT NULL,
-    CONSTRAINT uq_dangky_sv_lop UNIQUE (MaSV, MaLop),
+    MaSinhVien VARCHAR(20) NOT NULL,
+    CONSTRAINT uq_dangky_sv_lop UNIQUE (MaSinhVien, MaLop),
     NgayDangKy DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     DiemTongKet DECIMAL(5,2) NULL,
     TrangThai VARCHAR(20) NOT NULL DEFAULT 'DANG_HOC',
     CONSTRAINT fk_dangky_lop FOREIGN KEY (MaLop) REFERENCES LopHocPhan(MaLop),
-    CONSTRAINT fk_dangky_sinhvien FOREIGN KEY (MaSV) REFERENCES SinhVien(MaSV)
+    CONSTRAINT fk_dangky_sinhvien FOREIGN KEY (MaSinhVien) REFERENCES SinhVien(MaSinhVien)
 ) ENGINE=InnoDB;
 
 CREATE TABLE DiemThanhPhan (
-    MaDiemTP INT AUTO_INCREMENT PRIMARY KEY,
+    MaDiemThanhPhan INT AUTO_INCREMENT PRIMARY KEY,
     MaDangKy INT NOT NULL,
-    MaTP INT NOT NULL,
+    MaThanhPhan INT NOT NULL,
     DiemDatDuoc DECIMAL(5,2) NOT NULL,
     NgayNhap DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_diem_dangky FOREIGN KEY (MaDangKy) REFERENCES DangKyHoc(MaDangKy),
-    CONSTRAINT fk_diem_thanhphan FOREIGN KEY (MaTP) REFERENCES ThanhPhanDanhGia(MaTP),
-    CONSTRAINT uq_diem_dangky_thanhphan UNIQUE (MaDangKy, MaTP),
+    CONSTRAINT fk_diem_thanhphan FOREIGN KEY (MaThanhPhan) REFERENCES ThanhPhanDanhGia(MaThanhPhan),
+    CONSTRAINT uq_diem_dangky_thanhphan UNIQUE (MaDangKy, MaThanhPhan),
     CONSTRAINT chk_diem_giatri CHECK (DiemDatDuoc BETWEEN 0 AND 10)
 ) ENGINE=InnoDB;
 
 -- Development sample accounts. Password for every account below: 123.
-INSERT INTO Users (UserID, HoTen, Email, PasswordHash, Role, MaSo, Nganh) VALUES
-(1, 'Quản Trị Viên', 'admin@truong.edu.vn', '123', 'ADMIN', 'AD01', NULL),
-(2, 'Thầy Trần Code', 'code.tran@truong.edu.vn', '123', 'GIAOVIEN', 'GV01', 'CNTT'),
-(3, 'Nguyễn Văn Sinh', 'sinh.nguyen@sv.edu.vn', '123', 'SINHVIEN', 'SV001', 'CNTT'),
-(4, 'Lê Thị Viên', 'vien.le@sv.edu.vn', '123', 'SINHVIEN', 'SV002', 'CNTT'),
-(5, 'Trần Văn Ba', 'ba.tran@sv.edu.vn', '123', 'SINHVIEN', 'SV003', 'CNTT');
+INSERT INTO Users (UserID, HoTen, Email, Password, VaiTro, MaSo) VALUES
+(1, 'Quản Trị Viên', 'admin@truong.edu.vn', '123', 'ADMIN', 'AD01'),
+(2, 'Thầy Trần Code', 'code.tran@truong.edu.vn', '123', 'GIAOVIEN', 'GV01'),
+(3, 'Nguyễn Văn Sinh', 'sinh.nguyen@sv.edu.vn', '123', 'SINHVIEN', 'SV001'),
+(4, 'Lê Thị Viên', 'vien.le@sv.edu.vn', '123', 'SINHVIEN', 'SV002'),
+(5, 'Trần Văn Ba', 'ba.tran@sv.edu.vn', '123', 'SINHVIEN', 'SV003');
 
 INSERT INTO Admin (UserID, ChucVu) VALUES (1, 'Trưởng phòng Đào tạo');
-INSERT INTO GiaoVien (UserID, MaGV, ChuyenNganh, HocVi)
+INSERT INTO GiangVien (UserID, MaGiangVien, ChuyenNganh, HocVi)
 VALUES (2, 'GV01', 'Công nghệ phần mềm', 'Thạc sĩ');
-INSERT INTO SinhVien (UserID, MaSV, NgaySinh, GioiTinh, Lop, KhoaHoc, HeDaoTao) VALUES
-(3, 'SV001', '2003-05-12', 1, 'CN01', 2021, 'Chính quy'),
-(4, 'SV002', '2003-09-20', 0, 'CN01', 2021, 'Chính quy'),
-(5, 'SV003', '2003-11-03', 1, 'CN02', 2021, 'Chính quy');
+INSERT INTO SinhVien (UserID, MaSinhVien, Nganh, NgaySinh, GioiTinh, Lop, KhoaHoc, HeDaoTao) VALUES
+(3, 'SV001', 'CNTT', '2003-05-12', 1, 'CN01', 2021, 'Chính quy'),
+(4, 'SV002', 'CNTT', '2003-09-20', 0, 'CN01', 2021, 'Chính quy'),
+(5, 'SV003', 'CNTT', '2003-11-03', 1, 'CN02', 2021, 'Chính quy');
 
 INSERT INTO MonHoc (MaMon, TenMon, SoTinChi, LoaiMon, MoTa) VALUES
 ('IT01', 'Lập trình hướng đối tượng', 3, 'BATBUOC', 'Môn học nền tảng về lập trình hướng đối tượng.'),
@@ -186,7 +186,7 @@ VALUES ('CNTT', CURRENT_TIMESTAMP, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 30 DAY))
 INSERT INTO CauHinhHocKy (HocKy, KetThucHocKy, HanNhapDiem)
 VALUES ('2026-2', '2026-12-31', '2027-01-31 23:59:00');
 
-INSERT INTO LopHocPhan (MaLop, MaMon, MaGV, HocKy, SiSoToiDa) VALUES
+INSERT INTO LopHocPhan (MaLop, MaMon, MaGiangVien, HocKy, SiSoToiDa) VALUES
 ('OOP_L01', 'IT01', 'GV01', '2026-2', 40),
 ('DB_L01', 'IT02', 'GV01', '2026-2', 40),
 ('DSA_L01', 'IT03', 'GV01', '2026-2', 40),

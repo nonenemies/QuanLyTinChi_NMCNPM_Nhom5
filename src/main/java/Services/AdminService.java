@@ -203,13 +203,13 @@ public class AdminService {
                 || taiKhoan.getPasswordHash().length() > 255
                 || taiKhoan.getMaSo() == null || taiKhoan.getMaSo().isBlank()
                 || taiKhoan.getMaSo().length() > 20
-                || (taiKhoan.getNganh() != null && taiKhoan.getNganh().length() > 100)
                 || taiKhoan.getTrangThai() == null) {
             throw new ServiceException("Thông tin tài khoản không hợp lệ.");
         }
         if (taiKhoan instanceof SinhVien sinhVien) {
             if (!"SINHVIEN".equalsIgnoreCase(taiKhoan.getRole())
                     || !taiKhoan.getMaSo().equals(sinhVien.getMaSinhVien())
+                    || (sinhVien.getNganh() != null && sinhVien.getNganh().length() > 100)
                     || (sinhVien.getLop() != null && sinhVien.getLop().length() > 50)
                     || (sinhVien.getHeDaoTao() != null && sinhVien.getHeDaoTao().length() > 50)) {
                 throw new ServiceException("Mã sinh viên hoặc vai trò không hợp lệ.");

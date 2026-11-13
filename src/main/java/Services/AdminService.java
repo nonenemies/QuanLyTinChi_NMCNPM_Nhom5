@@ -2,6 +2,7 @@ package Services;
 
 import DAO.GiangVienDAO;
 import DAO.MonHocDAO;
+import DAO.NganhDAO;
 import DAO.SinhVienDAO;
 import DAO.UsersDAO;
 import Model.Admin;
@@ -22,6 +23,7 @@ public class AdminService {
     private final SinhVienDAO sinhVienDAO = new SinhVienDAO();
     private final GiangVienDAO giangVienDAO = new GiangVienDAO();
     private final MonHocDAO monHocDAO = new MonHocDAO();
+    private final NganhDAO nganhDAO = new NganhDAO();
 
     public List<Users> layDanhSachTaiKhoan(Admin admin) {
         kiemTraAdminHienTai(admin);
@@ -77,6 +79,7 @@ public class AdminService {
             conn.setAutoCommit(false);
             try {
                 kiemTraAdminTrongDatabase(conn, admin);
+                kiemTraNganhTonTai(conn, taiKhoan);
                 int userID = usersDAO.them(conn, taiKhoan);
                 taiKhoan.setUserID(userID);
                 boolean profileCreated = taiKhoan instanceof SinhVien sinhVien
@@ -109,6 +112,7 @@ public class AdminService {
             conn.setAutoCommit(false);
             try {
                 kiemTraAdminTrongDatabase(conn, admin);
+                kiemTraNganhTonTai(conn, taiKhoan);
                 Users hienTai = usersDAO.layTheoID(conn, taiKhoan.getUserID());
                 if (hienTai == null || hienTai instanceof Admin
                         || hienTai.getClass() != taiKhoan.getClass()
@@ -209,7 +213,10 @@ public class AdminService {
         if (taiKhoan instanceof SinhVien sinhVien) {
             if (!"SINHVIEN".equalsIgnoreCase(taiKhoan.getRole())
                     || !taiKhoan.getMaSo().equals(sinhVien.getMaSinhVien())
-                    || (sinhVien.getNganh() != null && sinhVien.getNganh().length() > 100)
+                    || (sinhVien.getNganh() != null
+                    && (sinhVien.getNganh().getMaNganh() == null
+                    || sinhVien.getNganh().getMaNganh().isBlank()
+                    || sinhVien.getNganh().getMaNganh().length() > 20))
                     || (sinhVien.getLop() != null && sinhVien.getLop().length() > 50)
                     || (sinhVien.getHeDaoTao() != null && sinhVien.getHeDaoTao().length() > 50)) {
                 throw new ServiceException("Mã sinh viên hoặc vai trò không hợp lệ.");
@@ -223,6 +230,13 @@ public class AdminService {
             }
         } else {
             throw new ServiceException("Chỉ hỗ trợ tạo và cập nhật hồ sơ sinh viên, giảng viên.");
+        }
+    }
+
+    private void kiemTraNganhTonTai(Connection conn, Users taiKhoan) throws SQLException {
+        if (taiKhoan instanceof SinhVien sinhVien && sinhVien.getNganh() != null
+                && !nganhDAO.tonTai(conn, sinhVien.getNganh().getMaNganh())) {
+            throw new ServiceException("Mã ngành không tồn tại.");
         }
     }
 

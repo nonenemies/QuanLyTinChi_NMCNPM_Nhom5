@@ -17,16 +17,22 @@ CREATE TABLE Users (
     TrangThai ENUM('HOAT_DONG', 'NGUNG_HOAT_DONG') NOT NULL DEFAULT 'HOAT_DONG'
 ) ENGINE=InnoDB;
 
+CREATE TABLE Nganh (
+    MaNganh VARCHAR(20) PRIMARY KEY,
+    TenNganh VARCHAR(100) NOT NULL
+) ENGINE=InnoDB;
+
 CREATE TABLE SinhVien (
     UserID INT PRIMARY KEY,
     MaSinhVien VARCHAR(20) UNIQUE NOT NULL,
-    Nganh VARCHAR(100) NULL,
+    MaNganh VARCHAR(20) NULL,
     NgaySinh DATE NULL,
     GioiTinh TINYINT(1) NULL,
     Lop VARCHAR(50) NULL,
     KhoaHoc INT NULL,
     HeDaoTao VARCHAR(50) NULL,
-    CONSTRAINT fk_sinhvien_user FOREIGN KEY (UserID) REFERENCES Users(UserID)
+    CONSTRAINT fk_sinhvien_user FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    CONSTRAINT fk_sinhvien_nganh FOREIGN KEY (MaNganh) REFERENCES Nganh(MaNganh)
 ) ENGINE=InnoDB;
 
 CREATE TABLE GiangVien (
@@ -62,6 +68,15 @@ CREATE TABLE MonTienQuyet (
     CONSTRAINT chk_tienquyet_khac_mon CHECK (MaMon <> MaMonTienQuyet)
 ) ENGINE=InnoDB;
 
+CREATE TABLE CauHinhHocKy (
+    HocKy VARCHAR(20) PRIMARY KEY,
+    KetThucHocKy DATE NOT NULL,
+    HanNhapDiem DATETIME NOT NULL,
+    CONSTRAINT chk_hocky_thoigian CHECK (
+        HanNhapDiem > TIMESTAMP(KetThucHocKy)
+    )
+) ENGINE=InnoDB;
+
 CREATE TABLE LopHocPhan (
     MaLop VARCHAR(20) PRIMARY KEY,
     MaMon VARCHAR(20) NOT NULL,
@@ -72,31 +87,25 @@ CREATE TABLE LopHocPhan (
     TrangThai ENUM('HOAT_DONG', 'NGUNG_HOAT_DONG') NOT NULL DEFAULT 'HOAT_DONG',
     CONSTRAINT fk_lophocphan_mon FOREIGN KEY (MaMon) REFERENCES MonHoc(MaMon),
     CONSTRAINT fk_lophocphan_giangvien FOREIGN KEY (MaGiangVien) REFERENCES GiangVien(MaGiangVien),
+    CONSTRAINT fk_lophocphan_hocky FOREIGN KEY (HocKy) REFERENCES CauHinhHocKy(HocKy),
     CONSTRAINT chk_lophocphan_siso CHECK (
         SiSoToiDa > 0 AND SiSoHienTai >= 0 AND SiSoHienTai <= SiSoToiDa
     )
 ) ENGINE=InnoDB;
 
-CREATE TABLE CauHinhHocKy (
-    HocKy VARCHAR(20) PRIMARY KEY,
-    KetThucHocKy DATE NOT NULL,
-    HanNhapDiem DATETIME NOT NULL,
-    CONSTRAINT chk_hocky_thoigian CHECK (
-        HanNhapDiem > TIMESTAMP(KetThucHocKy)
-    )
-) ENGINE=InnoDB;
-
 CREATE TABLE ChuongTrinhDaoTao (
-    Nganh VARCHAR(100) NOT NULL,
+    MaNganh VARCHAR(20) NOT NULL,
     MaMon VARCHAR(20) NOT NULL,
-    PRIMARY KEY (Nganh, MaMon),
+    PRIMARY KEY (MaNganh, MaMon),
+    CONSTRAINT fk_ctdt_nganh FOREIGN KEY (MaNganh) REFERENCES Nganh(MaNganh),
     CONSTRAINT fk_ctdt_mon FOREIGN KEY (MaMon) REFERENCES MonHoc(MaMon)
 ) ENGINE=InnoDB;
 
 CREATE TABLE DotDangKyNganh (
-    Nganh VARCHAR(100) PRIMARY KEY,
+    MaNganh VARCHAR(20) PRIMARY KEY,
     MoDangKy DATETIME NOT NULL,
     DongDangKy DATETIME NOT NULL,
+    CONSTRAINT fk_dotdangky_nganh FOREIGN KEY (MaNganh) REFERENCES Nganh(MaNganh),
     CONSTRAINT chk_dotdangky_thoigian CHECK (DongDangKy > MoDangKy)
 ) ENGINE=InnoDB;
 
@@ -159,7 +168,8 @@ INSERT INTO Users (UserID, HoTen, Email, Password, VaiTro, MaSo) VALUES
 INSERT INTO Admin (UserID, ChucVu) VALUES (1, 'Trưởng phòng Đào tạo');
 INSERT INTO GiangVien (UserID, MaGiangVien, ChuyenNganh, HocVi)
 VALUES (2, 'GV01', 'Công nghệ phần mềm', 'Thạc sĩ');
-INSERT INTO SinhVien (UserID, MaSinhVien, Nganh, NgaySinh, GioiTinh, Lop, KhoaHoc, HeDaoTao) VALUES
+INSERT INTO Nganh (MaNganh, TenNganh) VALUES ('CNTT', 'Công nghệ thông tin');
+INSERT INTO SinhVien (UserID, MaSinhVien, MaNganh, NgaySinh, GioiTinh, Lop, KhoaHoc, HeDaoTao) VALUES
 (3, 'SV001', 'CNTT', '2003-05-12', 1, 'CN01', 2021, 'Chính quy'),
 (4, 'SV002', 'CNTT', '2003-09-20', 0, 'CN01', 2021, 'Chính quy'),
 (5, 'SV003', 'CNTT', '2003-11-03', 1, 'CN02', 2021, 'Chính quy');
@@ -172,7 +182,7 @@ INSERT INTO MonHoc (MaMon, TenMon, SoTinChi, LoaiMon, MoTa) VALUES
 ('IT05', 'Mạng máy tính', 3, 'BATBUOC', 'Kiến thức nền tảng về mạng máy tính.');
 
 -- Curriculum is preloaded for the sample major.
-INSERT INTO ChuongTrinhDaoTao (Nganh, MaMon) VALUES
+INSERT INTO ChuongTrinhDaoTao (MaNganh, MaMon) VALUES
 ('CNTT', 'IT01'),
 ('CNTT', 'IT02'),
 ('CNTT', 'IT03'),
@@ -180,7 +190,7 @@ INSERT INTO ChuongTrinhDaoTao (Nganh, MaMon) VALUES
 ('CNTT', 'IT05');
 
 -- The sample registration period is open for 30 days from database setup.
-INSERT INTO DotDangKyNganh (Nganh, MoDangKy, DongDangKy)
+INSERT INTO DotDangKyNganh (MaNganh, MoDangKy, DongDangKy)
 VALUES ('CNTT', CURRENT_TIMESTAMP, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 30 DAY));
 
 INSERT INTO CauHinhHocKy (HocKy, KetThucHocKy, HanNhapDiem)

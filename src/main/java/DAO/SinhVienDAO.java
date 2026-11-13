@@ -1,6 +1,7 @@
 package DAO;
 
 import Model.SinhVien;
+import Model.Nganh;
 import Util.DBConnection;
 
 import java.sql.Connection;
@@ -14,9 +15,10 @@ import java.util.Objects;
 /** Truy vấn hồ sơ học tập bổ sung của tài khoản sinh viên. */
 public class SinhVienDAO {
     private static final String SELECT = "SELECT u.UserID, u.HoTen, u.Email, u.Password, u.VaiTro, "
-            + "u.MaSo, sv.Nganh, u.NgayTao, u.TrangThai, sv.MaSinhVien, sv.NgaySinh, sv.GioiTinh, "
+            + "u.MaSo, n.MaNganh, n.TenNganh, u.NgayTao, u.TrangThai, sv.MaSinhVien, sv.NgaySinh, sv.GioiTinh, "
             + "sv.Lop, sv.KhoaHoc, sv.HeDaoTao FROM SinhVien sv "
-            + "JOIN Users u ON u.UserID = sv.UserID ";
+            + "JOIN Users u ON u.UserID = sv.UserID "
+            + "LEFT JOIN Nganh n ON n.MaNganh = sv.MaNganh ";
 
     public SinhVien layTheoMaSV(String maSV) throws SQLException {
         try (Connection conn = DBConnection.getConnection()) {
@@ -55,12 +57,12 @@ public class SinhVienDAO {
 
     public boolean them(Connection conn, SinhVien sinhVien) throws SQLException {
         Objects.requireNonNull(sinhVien, "sinhVien không được null");
-        String sql = "INSERT INTO SinhVien (UserID, MaSinhVien, Nganh, NgaySinh, GioiTinh, Lop, KhoaHoc, HeDaoTao) "
+        String sql = "INSERT INTO SinhVien (UserID, MaSinhVien, MaNganh, NgaySinh, GioiTinh, Lop, KhoaHoc, HeDaoTao) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, sinhVien.getUserID());
             ps.setString(2, sinhVien.getMaSinhVien());
-            ps.setString(3, sinhVien.getNganh());
+            ps.setString(3, sinhVien.getNganh() == null ? null : sinhVien.getNganh().getMaNganh());
             if (sinhVien.getNgaySinh() == null) ps.setDate(4, null);
             else ps.setDate(4, new java.sql.Date(sinhVien.getNgaySinh().getTime()));
             if (sinhVien.getGioiTinh() == null) ps.setObject(5, null);
@@ -74,11 +76,11 @@ public class SinhVienDAO {
 
     public boolean capNhat(Connection conn, SinhVien sinhVien) throws SQLException {
         Objects.requireNonNull(sinhVien, "sinhVien không được null");
-        String sql = "UPDATE SinhVien SET MaSinhVien = ?, Nganh = ?, NgaySinh = ?, GioiTinh = ?, Lop = ?, "
+        String sql = "UPDATE SinhVien SET MaSinhVien = ?, MaNganh = ?, NgaySinh = ?, GioiTinh = ?, Lop = ?, "
                 + "KhoaHoc = ?, HeDaoTao = ? WHERE UserID = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, sinhVien.getMaSinhVien());
-            ps.setString(2, sinhVien.getNganh());
+            ps.setString(2, sinhVien.getNganh() == null ? null : sinhVien.getNganh().getMaNganh());
             if (sinhVien.getNgaySinh() == null) ps.setDate(3, null);
             else ps.setDate(3, new java.sql.Date(sinhVien.getNgaySinh().getTime()));
             if (sinhVien.getGioiTinh() == null) ps.setObject(4, null);
@@ -102,9 +104,14 @@ public class SinhVienDAO {
         Boolean gioiTinh = rs.getObject("GioiTinh", Boolean.class);
         return new SinhVien(rs.getInt("UserID"), rs.getString("HoTen"), rs.getString("Email"),
                 rs.getString("Password"), rs.getString("VaiTro"), rs.getString("MaSo"),
-                rs.getString("Nganh"), rs.getTimestamp("NgayTao"),
+                docNganh(rs), rs.getTimestamp("NgayTao"),
                 Model.TrangThaiHoatDong.valueOf(rs.getString("TrangThai")), rs.getString("MaSinhVien"),
                 rs.getDate("NgaySinh"), gioiTinh, rs.getString("Lop"),
                 rs.getObject("KhoaHoc", Integer.class), rs.getString("HeDaoTao"));
+    }
+
+    private Nganh docNganh(ResultSet rs) throws SQLException {
+        String maNganh = rs.getString("MaNganh");
+        return maNganh == null ? null : new Nganh(maNganh, rs.getString("TenNganh"));
     }
 }

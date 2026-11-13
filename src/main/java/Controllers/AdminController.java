@@ -3,6 +3,7 @@ package Controllers;
 import Model.Admin;
 import Model.GiangVien;
 import Model.MonHoc;
+import Model.Nganh;
 import Model.SinhVien;
 import Model.TrangThaiHoatDong;
 import Model.Users;
@@ -275,7 +276,7 @@ public class AdminController {
         colUserRole.setCellValueFactory(new PropertyValueFactory<>("role"));
         colUserMajor.setCellValueFactory(cell -> new ReadOnlyStringWrapper(
                 cell.getValue() instanceof SinhVien student && student.getNganh() != null
-                        ? student.getNganh() : ""));
+                        ? student.getNganh().getMaNganh() : ""));
         colUserStatus.setCellValueFactory(new PropertyValueFactory<>("trangThai"));
     }
 
@@ -321,7 +322,8 @@ public class AdminController {
     }
 
     private String accountNganh(Users account) {
-        return account instanceof SinhVien student ? optional(student.getNganh()) : "";
+        return account instanceof SinhVien student && student.getNganh() != null
+                ? optional(student.getNganh().getMaNganh()) : "";
     }
 
     private void filterCourses() {
@@ -341,8 +343,8 @@ public class AdminController {
         txtUserEmail.setText(selected.getEmail());
         txtUserPassword.clear();
         txtUserPassword.setPromptText("Để trống để giữ mật khẩu");
-        txtUserMajor.setText(selected instanceof SinhVien student
-                ? optional(student.getNganh()) : "");
+        txtUserMajor.setText(selected instanceof SinhVien student && student.getNganh() != null
+                ? optional(student.getNganh().getMaNganh()) : "");
         cmbUserStatus.setValue(selected.getTrangThai());
         if (selected instanceof SinhVien student) {
             txtStudentClass.setText(student.getLop());
@@ -380,7 +382,8 @@ public class AdminController {
                     : "Nữ".equals(genderText) ? Boolean.FALSE : null;
             LocalDate birth = dpStudentBirthDate.getValue();
             return new SinhVien(selectedAccount == null ? null : selectedAccount.getUserID(),
-                    name, email, password, STUDENT_ROLE, code, major, null, status,
+                    name, email, password, STUDENT_ROLE, code,
+                    major == null ? null : new Nganh(major, null), null, status,
                     code, birth == null ? null : Date.valueOf(birth), gender,
                     optional(txtStudentClass.getText()), cohort, optional(txtStudentDegree.getText()));
         }

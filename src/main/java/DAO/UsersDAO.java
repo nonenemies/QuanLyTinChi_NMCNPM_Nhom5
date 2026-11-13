@@ -2,6 +2,7 @@ package DAO;
 
 import Model.Admin;
 import Model.GiangVien;
+import Model.Nganh;
 import Model.SinhVien;
 import Model.TrangThaiHoatDong;
 import Model.Users;
@@ -20,9 +21,10 @@ import java.util.Objects;
 public class UsersDAO {
     private static final String USER_SELECT = "SELECT u.UserID, u.HoTen, u.Email, u.Password, "
             + "u.VaiTro, u.MaSo, u.NgayTao, u.TrangThai, "
-            + "sv.MaSinhVien, sv.Nganh, sv.NgaySinh, sv.GioiTinh, sv.Lop, sv.KhoaHoc, sv.HeDaoTao, "
+            + "sv.MaSinhVien, n.MaNganh, n.TenNganh, sv.NgaySinh, sv.GioiTinh, sv.Lop, sv.KhoaHoc, sv.HeDaoTao, "
             + "gv.MaGiangVien, gv.ChuyenNganh, gv.HocVi, ad.ChucVu "
             + "FROM Users u LEFT JOIN SinhVien sv ON sv.UserID = u.UserID "
+            + "LEFT JOIN Nganh n ON n.MaNganh = sv.MaNganh "
             + "LEFT JOIN GiangVien gv ON gv.UserID = u.UserID "
             + "LEFT JOIN Admin ad ON ad.UserID = u.UserID ";
 
@@ -120,7 +122,7 @@ public class UsersDAO {
         Boolean gioiTinh = rs.wasNull() ? null : gioiTinhValue;
         return switch (role.toUpperCase(java.util.Locale.ROOT)) {
             case "SINHVIEN" -> new SinhVien(userID, hoTen, email, password, role, maSo,
-                    rs.getString("Nganh"), ngayTao,
+                    docNganh(rs), ngayTao,
                     trangThai, rs.getString("MaSinhVien"), rs.getDate("NgaySinh"), gioiTinh, rs.getString("Lop"),
                     rs.getObject("KhoaHoc", Integer.class), rs.getString("HeDaoTao"));
             case "GIAOVIEN" -> new GiangVien(userID, hoTen, email, password, role, maSo, ngayTao,
@@ -129,5 +131,10 @@ public class UsersDAO {
                     trangThai, rs.getString("ChucVu"));
             default -> throw new SQLException("Vai trò tài khoản không được hỗ trợ: " + role);
         };
+    }
+
+    private Nganh docNganh(ResultSet rs) throws SQLException {
+        String maNganh = rs.getString("MaNganh");
+        return maNganh == null ? null : new Nganh(maNganh, rs.getString("TenNganh"));
     }
 }

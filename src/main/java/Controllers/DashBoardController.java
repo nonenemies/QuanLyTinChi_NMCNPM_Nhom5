@@ -139,7 +139,8 @@ public class DashBoardController {
         addProfileDetail("Email", valueOrDash(student.getEmail()));
         addProfileDetail("Mã sinh viên", valueOrDash(student.getMaSinhVien()));
         addProfileDetail("Lớp", valueOrDash(student.getLop()));
-        addProfileDetail("Ngành", valueOrDash(student.getNganh()));
+        addProfileDetail("Ngành", valueOrDash(student.getNganh() == null
+                ? null : student.getNganh().getTenNganh()));
         addProfileDetail("Khóa học", student.getKhoaHoc() == null ? "—" : student.getKhoaHoc().toString());
         addProfileDetail("Hệ đào tạo", valueOrDash(student.getHeDaoTao()));
 

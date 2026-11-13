@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class SinhVien extends Users {
     private String maSinhVien;
-    private String nganh;
+    private Nganh nganh;
     private Date ngaySinh;
     private Boolean gioiTinh;
     private String lop;
@@ -13,7 +13,7 @@ public class SinhVien extends Users {
 
     public SinhVien(Integer userID, String hoTen, String email,
                     String passwordHash, String role, String maSo,
-                    String nganh, Date ngayTao, TrangThaiHoatDong trangThai,
+                    Nganh nganh, Date ngayTao, TrangThaiHoatDong trangThai,
                     String maSinhVien, Date ngaySinh, Boolean gioiTinh,
                     String lop, Integer khoaHoc, String heDaoTao) {
         super(userID, hoTen, email, passwordHash, role, maSo, ngayTao, trangThai);
@@ -34,11 +34,11 @@ public class SinhVien extends Users {
         this.maSinhVien = maSinhVien;
     }
 
-    public String getNganh() {
+    public Nganh getNganh() {
         return nganh;
     }
 
-    public void setNganh(String nganh) {
+    public void setNganh(Nganh nganh) {
         this.nganh = nganh;
     }
 

@@ -2,22 +2,22 @@ package Model;
 
 /** Model ánh xạ tới bảng ChuongTrinhDaoTao trong database. */
 public class ChuongTrinhDaoTao {
-    private String nganh;
+    private Nganh nganh;
     private String maMon;
 
     public ChuongTrinhDaoTao() {
     }
 
-    public ChuongTrinhDaoTao(String nganh, String maMon) {
+    public ChuongTrinhDaoTao(Nganh nganh, String maMon) {
         this.nganh = nganh;
         this.maMon = maMon;
     }
 
-    public String getNganh() {
+    public Nganh getNganh() {
         return nganh;
     }
 
-    public void setNganh(String nganh) {
+    public void setNganh(Nganh nganh) {
         this.nganh = nganh;
     }
 

@@ -27,7 +27,7 @@ CREATE TABLE SinhVien (
     MaSinhVien VARCHAR(20) UNIQUE NOT NULL,
     MaNganh VARCHAR(20) NULL,
     NgaySinh DATE NULL,
-    GioiTinh TINYINT(1) NULL,
+    GioiTinh VARCHAR(10) NULL,
     Lop VARCHAR(50) NULL,
     KhoaHoc INT NULL,
     HeDaoTao VARCHAR(50) NULL,
@@ -112,12 +112,12 @@ CREATE TABLE DotDangKyNganh (
 CREATE TABLE LichHoc (
     MaLich INT AUTO_INCREMENT PRIMARY KEY,
     MaLop VARCHAR(20) NOT NULL,
-    Thu INT NOT NULL,
+    Thu VARCHAR(20) NOT NULL,
     GioBatDau TIME NOT NULL,
     GioKetThuc TIME NOT NULL,
     PhongHoc VARCHAR(50) NULL,
     CONSTRAINT fk_lichhoc_lop FOREIGN KEY (MaLop) REFERENCES LopHocPhan(MaLop),
-    CONSTRAINT chk_lichhoc_thu CHECK (Thu BETWEEN 2 AND 8),
+    CONSTRAINT chk_lichhoc_thu CHECK (Thu IN ('Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật')),
     CONSTRAINT chk_lichhoc_gio CHECK (GioBatDau < GioKetThuc)
 ) ENGINE=InnoDB;
 
@@ -204,11 +204,11 @@ INSERT INTO LopHocPhan (MaLop, MaMon, MaGiangVien, HocKy, SiSoToiDa) VALUES
 ('NET_L01', 'IT05', 'GV01', '2026-2', 40);
 
 INSERT INTO LichHoc (MaLop, Thu, GioBatDau, GioKetThuc, PhongHoc) VALUES
-('OOP_L01', 2, '08:00:00', '10:00:00', 'Phòng 101 - Nhà A'),
-('DB_L01', 3, '08:00:00', '10:00:00', 'Phòng 202 - Nhà A'),
-('DSA_L01', 4, '08:00:00', '10:00:00', 'Phòng 303 - Nhà A'),
-('SA_L01', 5, '08:00:00', '10:00:00', 'Phòng 104 - Nhà B'),
-('NET_L01', 6, '08:00:00', '10:00:00', 'Phòng 205 - Nhà B');
+('OOP_L01', 'Thứ 2', '08:00:00', '10:00:00', 'Phòng 101 - Nhà A'),
+('DB_L01', 'Thứ 3', '08:00:00', '10:00:00', 'Phòng 202 - Nhà A'),
+('DSA_L01', 'Thứ 4', '08:00:00', '10:00:00', 'Phòng 303 - Nhà A'),
+('SA_L01', 'Thứ 5', '08:00:00', '10:00:00', 'Phòng 104 - Nhà B'),
+('NET_L01', 'Thứ 6', '08:00:00', '10:00:00', 'Phòng 205 - Nhà B');
 
 INSERT INTO ThanhPhanDanhGia (MaMon, TenThanhPhan, TrongSo, ThuTu) VALUES
 ('IT01', 'Giữa kỳ', 0.30, 1), ('IT01', 'Cuối kỳ', 0.70, 2),
